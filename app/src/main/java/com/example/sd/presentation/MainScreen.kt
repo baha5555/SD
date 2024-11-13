@@ -113,6 +113,8 @@ fun BottomNavigationBar(navController: NavController) {
                             tint = if (currentRoute == "AnalysisScreen") selectedColor else Color.Unspecified
                         )
                         Spacer(modifier = Modifier.height(8.dp)) // Добавляем паддинг между иконкой и текстом
+
+
                         Text(
                             "Главная",
                             style = TextStyle(
