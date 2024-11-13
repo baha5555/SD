@@ -86,6 +86,7 @@ fun MainScreen() {
 fun BottomNavigationBar(navController: NavController) {
     val selectedColor = Color(0xFF004FC7)
     val unselectedColor = Color.Gray
+
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
 
