@@ -48,7 +48,7 @@ val context = LocalContext.current
     LaunchedEffect(showSecondScreen) {
         if (showSecondScreen) {
             delay(1000)
-            if (preferences.getAccessToken() == "" || viewModel.stateAuth.value.response == null) {
+            if (preferences.getAccessToken() == "") {
                 navController.navigate("login") {
                     Toast.makeText(context,"ваш срок токена истек!",Toast.LENGTH_SHORT).show()
                     popUpTo("splash") {
@@ -56,7 +56,7 @@ val context = LocalContext.current
                     }
                 }
             } else {
-                navController.navigate("drawer") {
+                navController.navigate("login") {
                     popUpTo("splash") {
                         inclusive = true
                     }

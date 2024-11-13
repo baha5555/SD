@@ -42,16 +42,9 @@ import com.example.sd.presentation.filter.FilterViewModel
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun MainScreen() {
+fun MainScreen(viewModel: AuthViewModel,dashboardViewModel: DashboardViewModel,filterViewModel: FilterViewModel) {
     val navController = rememberNavController()
-    val viewModel: AuthViewModel = hiltViewModel()
-    val dashboardViewModel: DashboardViewModel = hiltViewModel()
-    val filterViewModel: FilterViewModel = hiltViewModel()
 
-    LaunchedEffect(key1 = true) {
-        dashboardViewModel.getDashboard()
-        viewModel.getAboutMe()
-    }
 
     Scaffold(
         bottomBar = {
@@ -64,10 +57,7 @@ fun MainScreen() {
     ) {paddingValues ->
         Log.e("paddingValues","paddingValues -> ${paddingValues}")
         Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
-            NavHost(navController, startDestination = "splash") {
-                composable("drawer") { MainScreen() }
-                composable("login") { AuthScreen(navController) }
-                composable("splash") { SplashScreen(navController) }
+            NavHost(navController, startDestination = "AnalysisScreen") {
                 composable("AnalysisScreen") { AnalysisScreen(navController, dashboardViewModel) }
                 composable("BidsScreen") { BidsScreen(navController, viewModel, filterViewModel) }
                 composable("DetailScreen") { DetailScreen(navController, viewModel) }
