@@ -1,0 +1,71 @@
+[versions]
+agp = "8.4.0-rc02"
+kotlin = "1.9.0"
+coreKtx = "1.13.1"
+junit = "4.13.2"
+junitVersion = "1.2.1"
+espressoCore = "3.6.1"
+lifecycleRuntimeKtx = "2.8.6"
+activityCompose = "1.9.2"
+composeBom = "2023.08.00"
+lottieCompose = "6.0.0"
+navigation-compose = "2.6.0"
+
+compose-material = "1.5.1"
+coil-compose = "2.7.0"
+voyager-navigator = "1.0.0-rc03"
+
+retrofit_version = "2.9.0"
+ okhttp_version = "4.12.0"
+transportRuntime = "3.3.0"
+hilt_version = "2.51.1"
+hilt_navigation_version = "1.2.0"
+androidx_paging = "3.1.1"
+pagingCommonAndroid = "3.3.2"
+paging_compose = "1.0.0-alpha14"
+swiperefresh = "0.19.0"
+runtime = "1.2.1"
+
+
+
+
+[libraries]
+lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottieCompose" }
+runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtime"}
+swiperefresh = {group = "com.google.accompanist", name = "accompanist-swiperefresh", version.ref = "swiperefresh"}
+androidx_paging = {group = "androidx.paging",name = "paging-compose",version.ref  = "paging_compose"}
+hilt_android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt_version" }
+hilt_compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt_version" }
+hilt_navigation_compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hilt_navigation_version" }
+
+androidx-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation-compose" }
+retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit_version" }
+converter_gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit_version" }
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp_version" }
+logging_interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp_version" }
+
+voyager-navigator = { group = "cafe.adriel.voyager", name = "voyager-navigator", version.ref = "voyager-navigator" }
+coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil-compose" }
+compose-material = { group = "androidx.compose.material", name = "material", version.ref = "compose-material" }
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+transport-runtime = { group = "com.google.android.datatransport", name = "transport-runtime", version.ref = "transportRuntime" }
+androidx-paging-common-android = { group = "androidx.paging", name = "paging-common-android", version.ref = "pagingCommonAndroid" }
+
+[plugins]
+hilt-android = { id = "com.google.dagger.hilt.android", version = "2.51.1" }
+android-application = { id = "com.android.application", version.ref = "agp" }
+jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-kapt = { id = "kotlin-kapt", version = "1.9.0" }
