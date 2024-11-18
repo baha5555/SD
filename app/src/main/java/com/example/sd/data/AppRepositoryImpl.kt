@@ -9,6 +9,7 @@ import com.example.sd.data.preference.CustomPreference
 import com.example.sd.domain.aboutMe.AboutMe
 import com.example.sd.domain.changePassword.ChangePassword
 import com.example.sd.domain.dashboard.Dashboard
+import com.example.sd.domain.filterResponse.FilterResponse
 
 
 class AppRepositoryImpl(
@@ -22,4 +23,5 @@ class AppRepositoryImpl(
     override suspend fun getDashboard(): Dashboard = api.getDashboard(prefs.getAccessToken())
     override suspend fun aboutMe(): AboutMe = api.aboutMe(prefs.getAccessToken())
     override suspend fun changePassword( userId: String,password: String,password_confirmation: String): ChangePassword  = api.changePassword(prefs.getAccessToken(), userId,password,password_confirmation)
+    override suspend fun getFilteredData(filters:  Map<String, String>): FilterResponse = api.getFilteredData(prefs.getAccessToken(),filters)
 }

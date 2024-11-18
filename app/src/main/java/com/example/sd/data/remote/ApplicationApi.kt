@@ -6,8 +6,7 @@ import com.example.sd.domain.athorization.AuthResponse
 import com.example.sd.domain.bits.GetBids
 import com.example.sd.domain.changePassword.ChangePassword
 import com.example.sd.domain.dashboard.Dashboard
-import com.example.sd.utils.Values
-import com.example.sd.utils.Values.USERID
+import com.example.sd.domain.filterResponse.FilterResponse
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
@@ -15,6 +14,7 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
+import retrofit2.http.QueryMap
 
 
 interface ApplicationApi {
@@ -50,4 +50,11 @@ interface ApplicationApi {
         @Field("password") password: String,
         @Field("password_confirmation") password_confirmation: String,
     ): ChangePassword
+
+
+    @GET("bids/search")
+    suspend fun getFilteredData(
+        @Header("Authorization") token: String,
+        @QueryMap(encoded = true) filters: Map<String, String>
+    ): FilterResponse
 }

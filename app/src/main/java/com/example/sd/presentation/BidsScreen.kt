@@ -67,14 +67,21 @@ fun BidsScreen(
     viewModel: AuthViewModel,
     filterViewModel: FilterViewModel
 ) {
-    val pagingData: Flow<PagingData<Data>> = viewModel.paging(50)
+    // Создаем переменные для данных
+    val pagingData: Flow<PagingData<Data>> = if (filterViewModel.selectedFilters.isEmpty()) {
+        viewModel.paging(50) // Без фильтра
+    } else {
+        filterViewModel.fetchFilteredBids() // С фильтром
+    }
+
     val lazyPagingItems = pagingData.collectAsLazyPagingItems()
+
 
     Scaffold(
         topBar = {
             TopAppBar(
                 elevation = 0.dp,
-                modifier = Modifier.fillMaxHeight(0.2f),
+                modifier = Modifier.fillMaxHeight(if(filterViewModel.selectedFilters.isNotEmpty()) 0.23f else 0.18f),
                 backgroundColor = Color.White,
                 contentColor = Color.Black,
                 title = {
@@ -149,17 +156,16 @@ fun BidsScreen(
 
                         }
                         Column(
-                            modifier = Modifier.fillMaxSize().fillMaxHeight(0.1f)
-
+                            modifier = Modifier.fillMaxSize().fillMaxHeight(), verticalArrangement = Arrangement.Center
                         ) {
 
                           Row(
                                 modifier = Modifier
                                     .horizontalScroll(rememberScrollState())
                                     .fillMaxWidth()
-                                    .height(80.dp)
-                                    .padding(vertical = 8.dp),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    .height(50.dp)
+                                    .padding(vertical = 6.dp),
+                                horizontalArrangement = Arrangement.spacedBy(6.dp),
                                verticalAlignment = Alignment.CenterVertically
                             ) {
                                 filterViewModel.selectedFilters.forEach { filter ->

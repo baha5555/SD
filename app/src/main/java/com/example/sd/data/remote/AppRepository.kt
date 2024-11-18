@@ -6,6 +6,7 @@ import com.example.sd.domain.athorization.AuthResponse
 import com.example.sd.domain.bits.GetBids
 import com.example.sd.domain.changePassword.ChangePassword
 import com.example.sd.domain.dashboard.Dashboard
+import com.example.sd.domain.filterResponse.FilterResponse
 
 
 interface AppRepository {
@@ -14,5 +15,8 @@ interface AppRepository {
     suspend fun getDashboard(): Dashboard
     suspend fun aboutMe():AboutMe
     suspend fun changePassword( userId: String,password: String,password_confirmation: String): ChangePassword
+
+    suspend fun getFilteredData(filters:  Map<String, String>): FilterResponse
+
 }
 

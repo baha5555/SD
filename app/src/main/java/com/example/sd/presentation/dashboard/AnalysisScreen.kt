@@ -327,7 +327,7 @@ fun AnimatedDonutChart(
     }
 
     Canvas(modifier = modifier.size(chartSize)) {
-        val strokeWidth = 25.dp.toPx() // Толщина дуги
+        val strokeWidth = 15.dp.toPx() // Толщина дуги
         var startAngle = -90f // Начальный угол (начинаем сверху)
 
         // Рисуем каждый сегмент с анимацией и равными зазорами
