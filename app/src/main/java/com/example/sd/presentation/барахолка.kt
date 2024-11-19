@@ -36,28 +36,3 @@ import com.example.sd.R
 
 
 
-@Composable
-fun FilterChip(filter: String, onRemove: () -> Unit) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxHeight()
-            .border(
-                width = 1.dp,
-                color = Color(0xFFE2E8F0),
-                shape = RoundedCornerShape(size = 8.dp)
-            )
-            .background(color = Color.White, shape = RoundedCornerShape(size = 8.dp)).padding(10.dp)
-
-    ) {
-        Text(filter, color = Color.Black, fontSize = 14.sp)
-
-        Icon(
-            painter = painterResource(id = R.drawable.icon_remove),
-            contentDescription = "",
-            tint = Color.Unspecified,
-            modifier = Modifier
-                .clickable { onRemove() })
-    }
-}
-

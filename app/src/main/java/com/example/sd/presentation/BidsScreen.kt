@@ -67,14 +67,21 @@ fun BidsScreen(
     viewModel: AuthViewModel,
     filterViewModel: FilterViewModel
 ) {
-    val pagingData: Flow<PagingData<Data>> = viewModel.paging(50)
+    // Создаем переменные для данных
+    val pagingData: Flow<PagingData<Data>> = if (filterViewModel.selectedFilters.isEmpty()) {
+        viewModel.paging(50) // Без фильтра
+    } else {
+        filterViewModel.fetchFilteredBids() // С фильтром
+    }
+
     val lazyPagingItems = pagingData.collectAsLazyPagingItems()
+
 
     Scaffold(
         topBar = {
             TopAppBar(
                 elevation = 0.dp,
-                modifier = Modifier.fillMaxHeight(0.2f),
+                modifier = Modifier.fillMaxHeight(if(filterViewModel.selectedFilters.isNotEmpty()) 0.23f else 0.18f),
                 backgroundColor = Color.White,
                 contentColor = Color.Black,
                 title = {
@@ -104,7 +111,7 @@ fun BidsScreen(
                                 },
                                 textStyle = TextStyle.Default.copy(fontSize = 18.sp),
                                 modifier = Modifier
-                                    .fillMaxWidth(0.75f)
+                                    .fillMaxWidth(0.75f).fillMaxHeight(0.7f)
                                     .background(
                                         MaterialTheme.colors.background,
                                         shape = RoundedCornerShape(12.dp)
@@ -119,22 +126,22 @@ fun BidsScreen(
                                     )
                                 },
                                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                                    focusedBorderColor = Color(0xFF004FC7),
-                                    unfocusedBorderColor = Color(0xFFAFBCCB),
-                                    errorBorderColor = Color(0xFFAFBCCB),
+                                    focusedBorderColor = Color(0xFFE2E8F0),
+                                    unfocusedBorderColor = Color(0xFFE2E8F0),
+                                    errorBorderColor = Color(0xFFE2E8F0),
                                     cursorColor = Color(0xFF004FC7),
                                     textColor = Color.Black
                                 )
                             )
                             Box(
                                 modifier = Modifier
-                                    .height(55.dp)
+                                    .height(53.dp)
                                     .width(80.dp)
                                     .padding(start = 20.dp)
                                     .border(
                                         width = 1.dp,
                                         shape = RoundedCornerShape(12.dp),
-                                        color = Color(0xFFAFBCCB),
+                                        color = Color(0xFFE2E8F0),
                                     ),
                                 contentAlignment = Alignment.Center
                             ) {
@@ -149,17 +156,16 @@ fun BidsScreen(
 
                         }
                         Column(
-                            modifier = Modifier.fillMaxSize().fillMaxHeight(0.1f)
-
+                            modifier = Modifier.fillMaxSize().fillMaxHeight(), verticalArrangement = Arrangement.Center
                         ) {
 
                           Row(
                                 modifier = Modifier
                                     .horizontalScroll(rememberScrollState())
                                     .fillMaxWidth()
-                                    .height(80.dp)
-                                    .padding(vertical = 8.dp),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    .height(50.dp)
+                                    .padding(vertical = 6.dp),
+                                horizontalArrangement = Arrangement.spacedBy(6.dp),
                                verticalAlignment = Alignment.CenterVertically
                             ) {
                                 filterViewModel.selectedFilters.forEach { filter ->
@@ -242,7 +248,7 @@ fun ExpandableTicketCard(ticket: Data, onClick: () -> Unit) {
             Text(
                 text = ticket.created_at.toString(),
                 style = TextStyle(
-                    fontSize = 12.sp,
+                    fontSize = 14.sp,
                     lineHeight = 18.sp,
                     fontFamily = FontFamily(Font(R.font.inter)),
                     fontWeight = FontWeight.Medium,
@@ -288,7 +294,7 @@ fun Element(label: String) {
         modifier = Modifier
             .background(
                 color = Color(0xFFFF004FC7),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(16.dp)
             )
             .padding(8.dp)
     ) {
@@ -297,7 +303,7 @@ fun Element(label: String) {
                 fontSize = 12.sp,
                 lineHeight = 18.sp,
                 fontFamily = FontFamily(Font(R.font.inter)),
-                fontWeight = FontWeight.Medium,
+                fontWeight = FontWeight.SemiBold,
                 color = Color(0xFFFFFFFF),
                 letterSpacing = 0.4.sp,
             )
@@ -321,7 +327,7 @@ fun Element2(label: String) {
                 fontSize = 12.sp,
                 lineHeight = 18.sp,
                 fontFamily = FontFamily(Font(R.font.inter)),
-                fontWeight = FontWeight.Medium,
+                fontWeight = FontWeight.SemiBold,
                 color = Color(0xFF004FC7),
                 letterSpacing = 0.4.sp,
             )
@@ -346,7 +352,7 @@ fun Element3(label: String) {
                 fontSize = 12.sp,
                 lineHeight = 18.sp,
                 fontFamily = FontFamily(Font(R.font.inter)),
-                fontWeight = FontWeight.Medium,
+                fontWeight = FontWeight.SemiBold,
                 color = Color(0xFF2C2D2E),
                 letterSpacing = 0.4.sp,
             )
@@ -370,11 +376,37 @@ fun Element4(label: String) {
                 fontSize = 12.sp,
                 lineHeight = 18.sp,
                 fontFamily = FontFamily(Font(R.font.inter)),
-                fontWeight = FontWeight.Medium,
+                fontWeight = FontWeight.SemiBold,
                 color = Color(0xFFFFFFFF),
                 letterSpacing = 0.4.sp,
             )
         )
 
+    }
+}
+
+
+@Composable
+fun FilterChip(filter: String, onRemove: () -> Unit) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxHeight()
+            .border(
+                width = 1.dp,
+                color = Color(0xFFE2E8F0),
+                shape = RoundedCornerShape(size = 8.dp)
+            )
+            .background(color = Color.White, shape = RoundedCornerShape(size = 8.dp)).padding(10.dp)
+
+    ) {
+        androidx.compose.material.Text(filter, color = Color.Black, fontSize = 14.sp)
+
+        Icon(
+            painter = painterResource(id = R.drawable.icon_remove),
+            contentDescription = "",
+            tint = Color.Unspecified,
+            modifier = Modifier
+                .clickable { onRemove() })
     }
 }
