@@ -20,12 +20,15 @@ import com.example.sd.domain.aboutMe.AboutMe
 import com.example.sd.domain.aboutMe.AboutMeUseCase
 import com.example.sd.domain.bits.CreatedUserId
 import com.example.sd.domain.bits.Data
+import com.example.sd.domain.bits.bidCategories.GetBidCategories
+import com.example.sd.domain.bits.bidCategories.GetBidCategoriesUseCase
 import com.example.sd.domain.changePassword.ChangePassword
 import com.example.sd.domain.changePassword.ChangePasswordUseCase
 import com.example.sd.presentation.states.AboutMeResponseState
 import com.example.sd.presentation.states.AuthResponseState
 import com.example.sd.presentation.states.BidsResponseState
 import com.example.sd.presentation.states.ChangePasswordResponseState
+import com.example.sd.presentation.states.GetBidCategoriesResponseState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.launchIn
@@ -40,7 +43,8 @@ class AuthViewModel @Inject constructor(
     private val bidsUseCase: BidsUseCase,
     private val aboutMeUseCase: AboutMeUseCase,
     private val changePasswordUseCase: ChangePasswordUseCase,
-    private val prefs: CustomPreference
+    private val prefs: CustomPreference,
+    private val getBidCategoriesUseCase: GetBidCategoriesUseCase
 ) : AndroidViewModel(application) {
 
 
@@ -59,6 +63,9 @@ class AuthViewModel @Inject constructor(
 
     private val _stateAboutMe = mutableStateOf(AboutMeResponseState())
     val stateAboutMe: State<AboutMeResponseState> = _stateAboutMe
+
+    private val _stategetBidCategories = mutableStateOf(GetBidCategoriesResponseState())
+    val stategetBidCategories: State<GetBidCategoriesResponseState> = _stategetBidCategories
 
     private val _stateBids = mutableStateOf(BidsResponseState())
     val stateBids: State<BidsResponseState> = _stateBids
@@ -166,6 +173,31 @@ class AuthViewModel @Inject constructor(
 
                 is Resource.Loading -> {
                     _stateAboutMe.value = AboutMeResponseState(isLoading = true)
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+    fun getBidCategories() {
+
+        getBidCategoriesUseCase.invoke().onEach { result: Resource<GetBidCategories> ->
+            when (result) {
+                is Resource.Success -> {
+                    try {
+                        val response: GetBidCategories? = result.data
+                        _stategetBidCategories.value = GetBidCategoriesResponseState(response = response)
+                        Log.e("stategetBidCategoriesResponse", "stategetBidCategoriesResponse->\n ${_stateAuth.value}")
+                    } catch (e: Exception) {
+                        Log.d("Exception", "${e.message} Exception")
+                    }
+                }
+
+                is Resource.Error -> {
+                    Log.e("stategetBidCategoriesResponse", "stategetBidCategoriesResponseError->\n ${result.message}")
+                    _stategetBidCategories.value = GetBidCategoriesResponseState(error = "${result.message}")
+                }
+
+                is Resource.Loading -> {
+                    _stategetBidCategories.value = GetBidCategoriesResponseState(isLoading = true)
                 }
             }
         }.launchIn(viewModelScope)

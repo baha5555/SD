@@ -1,5 +1,6 @@
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
@@ -28,6 +30,7 @@ import androidx.navigation.compose.*
 import com.example.sd.R
 import com.example.sd.presentation.dashboard.AnalysisScreen
 import com.example.sd.presentation.BidsScreen
+import com.example.sd.presentation.CreateBidsScreen
 import com.example.sd.presentation.DetailScreen
 import com.example.sd.presentation.filter.FilterScreen
 import com.example.sd.presentation.ProfileScreen
@@ -50,15 +53,21 @@ fun MainScreen(viewModel: AuthViewModel,dashboardViewModel: DashboardViewModel,f
         bottomBar = {
             when (navController.currentBackStackEntryAsState().value?.destination?.route) {
                 "BidsScreen", "ReportsScreen", "AnalysisScreen", "ProfileScreen" -> {
-                    BottomNavigationBar(navController)
+
+                   Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically){
+                       BottomNavigationBar(navController)
+                   }
                 }
             }
         }
     ) {paddingValues ->
         Log.e("paddingValues","paddingValues -> ${paddingValues}")
-        Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)) {
             NavHost(navController, startDestination = "AnalysisScreen") {
                 composable("AnalysisScreen") { AnalysisScreen(navController, dashboardViewModel) }
+                composable("CreateBidsScreen") { CreateBidsScreen(navController, viewModel) }
                 composable("BidsScreen") { BidsScreen(navController, viewModel, filterViewModel) }
                 composable("DetailScreen") { DetailScreen(navController, viewModel) }
                 composable("ReportsScreen") { /* Экран для отчетов */ }
@@ -81,7 +90,9 @@ fun BottomNavigationBar(navController: NavController) {
 
 
     BottomNavigation(
-        modifier = Modifier.fillMaxHeight(0.1f),
+        modifier = Modifier
+            .fillMaxHeight(0.1f)
+            .fillMaxWidth(0.95f),
         backgroundColor = Color.White,
         contentColor = Color.Gray, elevation = 0.dp
     ) {
@@ -110,7 +121,7 @@ fun BottomNavigationBar(navController: NavController) {
                             style = TextStyle(
                                 fontSize = 12.sp,
                                 fontFamily = FontFamily(Font(R.font.inter)),
-                                fontWeight = FontWeight(500),
+                                fontWeight = FontWeight(700),
                                 color = if (currentRoute == "AnalysisScreen") selectedColor else unselectedColor,
                                 textAlign = TextAlign.Center,
                             )
@@ -140,7 +151,7 @@ fun BottomNavigationBar(navController: NavController) {
                             style = TextStyle(
                                 fontSize = 12.sp,
                                 fontFamily = FontFamily(Font(R.font.inter)),
-                                fontWeight = FontWeight(500),
+                                fontWeight = FontWeight(700),
                                 color = if (currentRoute == "BidsScreen") selectedColor else unselectedColor,
                                 textAlign = TextAlign.Center,
                             )
@@ -165,7 +176,11 @@ fun BottomNavigationBar(navController: NavController) {
                     )
                 },
                 selected = false,
-                onClick = { /* Действие для центральной кнопки */ }
+                onClick = {  navController.navigate("CreateBidsScreen") {
+                    popUpTo(navController.graph.startDestinationId) { saveState = true }
+                    launchSingleTop = true
+                    restoreState = true
+                } }
             )
             BottomNavigationItem(
                 icon = {
@@ -180,7 +195,7 @@ fun BottomNavigationBar(navController: NavController) {
                             "Отчеты", style = TextStyle(
                                 fontSize = 12.sp,
                                 fontFamily = FontFamily(Font(R.font.inter)),
-                                fontWeight = FontWeight(500),
+                                fontWeight = FontWeight(700),
                                 color = if (currentRoute == "ReportsScreen") selectedColor else unselectedColor,
                                 textAlign = TextAlign.Center,
                             )
@@ -200,16 +215,16 @@ fun BottomNavigationBar(navController: NavController) {
                 icon = {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(
-                            painter = painterResource(id = R.drawable.icon_profile),
-                            contentDescription = "Профиль",
+                            painter = painterResource(id = R.drawable.icon_more),
+                            contentDescription = "Ещё",
                             tint = if (currentRoute == "ProfileScreen") selectedColor else Color.Unspecified
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            "Профиль", style = TextStyle(
+                            "Ещё", style = TextStyle(
                                 fontSize = 12.sp,
                                 fontFamily = FontFamily(Font(R.font.inter)),
-                                fontWeight = FontWeight(500),
+                                fontWeight = FontWeight(700),
                                 color = if (currentRoute == "ProfileScreen") selectedColor else unselectedColor,
                                 textAlign = TextAlign.Center,
                             )

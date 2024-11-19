@@ -1,4 +1,4 @@
-package com.example.sd.domain.filterResponse
+package com.example.sd.domain.bits.bidCategories
 
 data class UpdatedBy(
     val id: String,

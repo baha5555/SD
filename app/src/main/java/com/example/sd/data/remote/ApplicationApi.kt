@@ -4,9 +4,9 @@ import com.example.sd.domain.aboutMe.AboutMe
 import com.example.sd.domain.athorization.AuthResponse
 
 import com.example.sd.domain.bits.GetBids
+import com.example.sd.domain.bits.bidCategories.GetBidCategories
 import com.example.sd.domain.changePassword.ChangePassword
 import com.example.sd.domain.dashboard.Dashboard
-import com.example.sd.domain.filterResponse.FilterResponse
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
@@ -56,5 +56,10 @@ interface ApplicationApi {
     suspend fun getFilteredData(
         @Header("Authorization") token: String,
         @QueryMap(encoded = true) filters: Map<String, String>
-    ): FilterResponse
+    ): GetBids
+
+    @GET("bidCategories")
+    suspend fun getBidCategories(
+        @Header("Authorization") token: String,
+    ): GetBidCategories
 }

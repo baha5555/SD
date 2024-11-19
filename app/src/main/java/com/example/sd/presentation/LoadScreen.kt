@@ -65,6 +65,7 @@ fun LoadingScreen(
     LaunchedEffect(key1 = true) {
         dashboardViewModel.getDashboard()
         viewModel.getAboutMe()
+        viewModel.getBidCategories()
 
         // Ждем 2 секунды, даже если данные уже загрузились
         delay(2000)
