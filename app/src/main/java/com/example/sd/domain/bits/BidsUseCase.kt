@@ -1,6 +1,7 @@
 package com.example.sd.domain.bits
 
 
+import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -35,6 +36,7 @@ class BidsPager(
     override suspend fun load(params: LoadParams<Int>): LoadResult.Page<Int, Data> {
         val pageNumber = params.key ?: 1
         val response = applicationApi.getBids(prefs.getAccessToken(),pageNumber)
+        Log.d("BidsPager","$response")
         val prevKey = if (pageNumber > 0) pageNumber - 1 else null
         val nextKey = if (response.data.size!=null) pageNumber + 1 else null
         return LoadResult.Page(

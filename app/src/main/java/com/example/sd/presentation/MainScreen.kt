@@ -1,6 +1,7 @@
 import android.annotation.SuppressLint
+import android.os.Build
 import android.util.Log
-import androidx.compose.foundation.background
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,28 +25,34 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.*
 import com.example.sd.R
 import com.example.sd.presentation.dashboard.AnalysisScreen
 import com.example.sd.presentation.BidsScreen
-import com.example.sd.presentation.CreateBidsScreen
 import com.example.sd.presentation.DetailScreen
 import com.example.sd.presentation.filter.FilterScreen
 import com.example.sd.presentation.ProfileScreen
-import com.example.sd.presentation.SplashScreen
-import com.example.sd.presentation.authorization.AuthScreen
+import com.example.sd.presentation.accounts.AccountsViewModel
 import com.example.sd.presentation.authorization.AuthViewModel
 import com.example.sd.presentation.authorization.ChangePasswordScreen
 import com.example.sd.presentation.authorization.SuccessChangePassword
+import com.example.sd.presentation.contact.ContactViewModel
+import com.example.sd.presentation.createBids.CreateBidCreateBidsScreenСompletion
+import com.example.sd.presentation.createBids.CreateBidsScreen1
+import com.example.sd.presentation.createBids.CreateBidsScreen2
+import com.example.sd.presentation.createBids.CreateBidsScreen3
+import com.example.sd.presentation.createBids.CreateBidsScreen4
+import com.example.sd.presentation.createBids.CreateBidsScreen5
+import com.example.sd.presentation.createBids.CreateBidsViewModel
 import com.example.sd.presentation.dashboard.DashboardViewModel
 import com.example.sd.presentation.filter.FilterViewModel
 
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@RequiresApi(Build.VERSION_CODES.O)
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter", )
 @Composable
-fun MainScreen(viewModel: AuthViewModel,dashboardViewModel: DashboardViewModel,filterViewModel: FilterViewModel) {
+fun MainScreen(viewModel: AuthViewModel,dashboardViewModel: DashboardViewModel,filterViewModel: FilterViewModel,contactViewModel: ContactViewModel,createBidsViewModel: CreateBidsViewModel,accountsViewModel: AccountsViewModel) {
     val navController = rememberNavController()
 
 
@@ -55,7 +62,7 @@ fun MainScreen(viewModel: AuthViewModel,dashboardViewModel: DashboardViewModel,f
                 "BidsScreen", "ReportsScreen", "AnalysisScreen", "ProfileScreen" -> {
 
                    Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically){
-                       BottomNavigationBar(navController)
+                       BottomNavigationBar(navController,createBidsViewModel)
                    }
                 }
             }
@@ -67,22 +74,27 @@ fun MainScreen(viewModel: AuthViewModel,dashboardViewModel: DashboardViewModel,f
             .padding(paddingValues)) {
             NavHost(navController, startDestination = "AnalysisScreen") {
                 composable("AnalysisScreen") { AnalysisScreen(navController, dashboardViewModel) }
-                composable("CreateBidsScreen") { CreateBidsScreen(navController, viewModel) }
                 composable("BidsScreen") { BidsScreen(navController, viewModel, filterViewModel) }
                 composable("DetailScreen") { DetailScreen(navController, viewModel) }
                 composable("ReportsScreen") { /* Экран для отчетов */ }
                 composable("ProfileScreen") { ProfileScreen(navController, viewModel) }
                 composable("FilterScreen") { FilterScreen(navController, filterViewModel) }
                 composable("SuccessChangePassword") { SuccessChangePassword(navController) }
-                composable("ChangePasswordScreen") { ChangePasswordScreen(navController, viewModel)
+                composable("ChangePasswordScreen") { ChangePasswordScreen(navController, viewModel)}
+                composable("step1") { CreateBidsScreen1(navController, viewModel = createBidsViewModel,) }
+                composable("step2") {CreateBidsScreen2(navController, viewModel = createBidsViewModel, ) }
+                composable("step3") { CreateBidsScreen3(navController, viewModel = createBidsViewModel, searchViewModel = contactViewModel) }
+                composable("step4") { CreateBidsScreen4(navController, viewModel = createBidsViewModel, searchViewModel = contactViewModel, accountsViewModel = accountsViewModel) }
+                composable("step5") { CreateBidsScreen5(navController, viewModel = createBidsViewModel, searchViewModel = contactViewModel,) }
+                composable("step6") { CreateBidCreateBidsScreenСompletion(navController,createBidsViewModel) }
                 }
             }
         }
     }
-}
+
 
 @Composable
-fun BottomNavigationBar(navController: NavController) {
+fun BottomNavigationBar(navController: NavController,viewModel: CreateBidsViewModel) {
     val selectedColor = Color(0xFF004FC7)
     val unselectedColor = Color.Gray
 
@@ -98,9 +110,9 @@ fun BottomNavigationBar(navController: NavController) {
     ) {
         Row(
             modifier = Modifier
-                .fillMaxHeight()
+                .fillMaxHeight().fillMaxWidth()
                 .padding(bottom = 20.dp),
-            horizontalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterHorizontally),
+            horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.Top,
         ) {
 
@@ -175,12 +187,17 @@ fun BottomNavigationBar(navController: NavController) {
                         tint = Color.Unspecified
                     )
                 },
-                selected = false,
-                onClick = {  navController.navigate("CreateBidsScreen") {
+                selected = currentRoute == "step1",
+                onClick = {
+                    viewModel.getUUID()
+                    viewModel.getEntityNumber("App\\Models\\Bids\\Bid")
+                    navController.navigate("step1") {
                     popUpTo(navController.graph.startDestinationId) { saveState = true }
                     launchSingleTop = true
                     restoreState = true
-                } }
+                }
+
+                }
             )
             BottomNavigationItem(
                 icon = {

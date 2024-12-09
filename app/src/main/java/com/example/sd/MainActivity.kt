@@ -1,6 +1,5 @@
 package com.example.sd
 
-import MainScreen
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
@@ -13,10 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.sd.presentation.CreateBidsScreen
 import com.example.sd.presentation.MainNavigation
-import com.example.sd.presentation.authorization.ChangePasswordScreen
-import com.example.sd.presentation.authorization.SuccessChangePassword
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

@@ -18,7 +18,7 @@ data class Data(
     val number: String?=null,
     val origin_id: OriginId?=null,
     val owner_id: OwnerId?=null,
-    val owner_roles: List<OwnerRole>?=null,
+    val owner_roles:  Any? = null,
     val parent_id: Any?=null,
     val priority_id: PriorityId?=null,
     val problem_id: Any?=null,
@@ -40,3 +40,12 @@ data class Data(
     val viewed_by: Any?=null,
     val viewed_by_owner: Int?=null
 )
+{
+    val _owner_roles: Any?
+        get() = when (owner_roles) {
+            is List<*> -> owner_roles.filterIsInstance<OwnerRole>()
+            is String -> owner_roles
+            else -> null
+        }
+}
+
