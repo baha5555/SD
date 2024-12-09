@@ -37,6 +37,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.sd.R
+import com.example.sd.utils.Constants
+import com.example.sd.utils.Values
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -46,8 +48,7 @@ fun ChangePasswordScreen(navController: NavController,viewModel: AuthViewModel) 
     val errorMessage = remember { mutableStateOf("") }
 
 
-    val userId = viewModel.stateAboutMe.value.response?.id
-    Toast.makeText(navController.context, userId.toString(), Toast.LENGTH_LONG).show()
+    Toast.makeText(navController.context, Values.USERID.value.toString(), Toast.LENGTH_LONG).show()
     Scaffold(
         topBar = {
             Row(
@@ -200,7 +201,7 @@ fun ChangePasswordScreen(navController: NavController,viewModel: AuthViewModel) 
                 ) {
                     Button(
                         onClick = {
-                            viewModel.changePassword(userId = userId.toString(), password = password.value, password_confirmation = password_confirmation.value){ success, error ->
+                            viewModel.changePassword(userId = Values.USERID.value, password = password.value, password_confirmation = password_confirmation.value){ success, error ->
                                 if (success) {
                                     navController.navigate("SuccessChangePassword") {
                                         popUpTo("ChangePasswordScreen") { inclusive = true }

@@ -1,6 +1,7 @@
 package com.example.sd.domain.filterResponse
 
 import android.util.Log
+import androidx.paging.LoadState
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -18,7 +19,7 @@ class FilteredBidsUseCase @Inject constructor(
 ) {
     operator fun invoke(filters:  Map<String, String>): Flow<PagingData<com.example.sd.domain.bits.Data>> {
         return Pager(
-            PagingConfig(pageSize = 50),
+            PagingConfig(pageSize = 10),
             pagingSourceFactory = { FilteredBidsPager(applicationApi, prefs, filters) }
         ).flow
     }
@@ -46,6 +47,8 @@ class FilteredBidsPager(
                 nextKey = nextKey
             )
         } catch (e: Exception) {
+            Log.e("FilteredBidsPager", "Ошибка при загрузке данных: ${e.message}")
+            LoadState.Error(e)  // Возвращаем ошибку в PagingSource
             throw Exception("Ошибка при загрузке данных: ${e.message}")
         }
     }

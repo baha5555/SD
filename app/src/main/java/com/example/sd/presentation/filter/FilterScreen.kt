@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -41,6 +42,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -54,8 +56,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.sd.R
+import com.example.sd.presentation.accounts.AccountsViewModel
+import com.example.sd.presentation.contact.ContactViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -98,12 +104,34 @@ fun FilterScreen(navController: NavController, viewModel: FilterViewModel) {
     ModalBottomSheetLayout(
         sheetState = bottomSheetState,
         sheetContent = {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text("Выберите ${selectedFilterLabel.lowercase()}", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                horizontalArrangement =  Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically, modifier = Modifier
+                    .height(12.dp)
+                    .fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier
+                        .height(5.dp)
+                        .width(50.dp)
+                        .background(color = Color(0xFFE2E8F0), shape = RoundedCornerShape(16.dp))
+                        .padding(top = 8.dp, bottom = 11.dp)
+                ){}
+            }
+            Column(modifier = Modifier
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState())) {
                 filterOptions.forEach { option ->
+
                     Text(
                         text = option,
+                         style = TextStyle(
+                            fontSize = 16.sp,
+                            lineHeight = 20.sp,
+                            fontFamily = FontFamily(Font(R.font.inter)),
+                            fontWeight = FontWeight(400),
+                            color = Color(0xFF2C2D2E),
+                        ),
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
@@ -271,14 +299,38 @@ fun FilterDropdown(
     scope: CoroutineScope,
     openBottomSheet: (String, List<String>) -> Unit
 ) {
+    val accountsViewModel : AccountsViewModel = hiltViewModel()
+    val searchViewModel : ContactViewModel = hiltViewModel()
+    val lazyPagingItemsForServiceItems = accountsViewModel.searchAccounts().collectAsLazyPagingItems()
+    val serviceItems = remember { mutableStateOf(listOf<String>()) }
+    LaunchedEffect(lazyPagingItemsForServiceItems) {
+        snapshotFlow { lazyPagingItemsForServiceItems.itemCount }
+            .collect { itemCount ->
+                val names = (0 until itemCount).mapNotNull { index ->
+                    lazyPagingItemsForServiceItems[index]?.name
+                }
+                serviceItems.value = names
+            }
+    }
+    val lazyPagingItems = searchViewModel.searchContact().collectAsLazyPagingItems()
+    val contact = remember { mutableStateOf(listOf<String>()) }
+    LaunchedEffect(lazyPagingItems) {
+        snapshotFlow { lazyPagingItems.itemCount }
+            .collect { itemCount ->
+                val names = (0 until itemCount).mapNotNull { index ->
+                    lazyPagingItems[index]?.name
+                }
+                contact.value = names
+            }
+    }
     fun getOptions(label: String): List<String> {
         return when (label) {
             "Линия" -> listOf("1 Линия", "2 Линия", "3 Линия")
             "Категория" -> listOf("Запрос на изменение", "Запрос на обслуживание", "Инцидент", "Не указан")
             "Состояние" -> listOf("Новое", "В работе", "Ожидает назначения ответственного", "Ожидает обработки", "Отклонено по SLA", "Отменено", "Разрешено", "Закрыто", "Ожидает реакцию пользователя")
-            "Сервис" -> listOf("Сервис 1", "Сервис 2", "Сервис 3")
-            "Контакт" -> listOf("Иван Иванов", "Петр Петров", "Анна Сидорова")
-            "Ответственный" -> listOf("Менеджер 1", "Менеджер 2", "Менеджер 3")
+            "Сервис" -> serviceItems.value
+            "Контакт" -> contact.value
+            "Ответственный" ->contact.value
             else -> listOf("Опция 1", "Опция 2", "Опция 3")
         }
     }
@@ -343,11 +395,20 @@ fun FilterDropdown(
 }
 
 @Composable
-fun DateTimePickerField(label: String, selectedValue: String, onValueChange: (String) -> Unit) {
+fun DateTimePickerField(
+    label: String,
+    selectedValue: String,
+    onValueChange: (String) -> Unit
+) {
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
 
-    Column(modifier = Modifier.fillMaxWidth()) {
+    val datePart = selectedValue.split(" ").getOrNull(0) ?: "ДД.ММ.ГГ"
+    val timePart = selectedValue.split(" ").getOrNull(1) ?: "00:00"
+
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(vertical = 10.dp)) {
         Text(
             label, style = TextStyle(
                 fontSize = 14.sp,
@@ -359,67 +420,99 @@ fun DateTimePickerField(label: String, selectedValue: String, onValueChange: (St
             )
         )
         Spacer(modifier = Modifier.height(8.dp))
-        OutlinedButton(
-            onClick = {
-                DatePickerDialog(
-                    context,
-                    { _, year, month, dayOfMonth ->
-                        calendar.set(year, month, dayOfMonth)
-                        TimePickerDialog(
-                            context,
-                            { _, hourOfDay, minute ->
-                                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
-                                calendar.set(Calendar.MINUTE, minute)
-                                val formattedDateTime = "${
-                                    dayOfMonth.toString().padStart(2, '0')
-                                }.${
-                                    (month + 1).toString().padStart(2, '0')
-                                }.$year ${hourOfDay.toString().padStart(2, '0')}:${
-                                    minute.toString().padStart(2, '0')
-                                }"
-                                onValueChange(formattedDateTime)
-                            },
-                            calendar.get(Calendar.HOUR_OF_DAY),
-                            calendar.get(Calendar.MINUTE),
-                            true
-                        ).show()
-                    },
-                    calendar.get(Calendar.YEAR),
-                    calendar.get(Calendar.MONTH),
-                    calendar.get(Calendar.DAY_OF_MONTH)
-                ).show()
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)
-                .padding(vertical = 4.dp),
-            shape = RoundedCornerShape(8.dp),
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Black)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+            // Поле выбора даты
+            OutlinedButton(
+                onClick = {
+                    DatePickerDialog(
+                        context,
+                        { _, year, month, dayOfMonth ->
+                            val formattedDate = "${
+                                dayOfMonth.toString().padStart(2, '0')
+                            }.${
+                                (month + 1).toString().padStart(2, '0')
+                            }.$year"
+                            // Обновляем только дату, комбинируя с уже существующим временем
+                            onValueChange("$formattedDate $timePart")
+                        },
+                        calendar.get(Calendar.YEAR),
+                        calendar.get(Calendar.MONTH),
+                        calendar.get(Calendar.DAY_OF_MONTH)
+                    ).show()
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .height(56.dp),
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Black)
             ) {
-
-                Text(
-                    text = selectedValue,
-                    fontSize = 16.sp,
-                    color = if (selectedValue.startsWith("Выберите")) Color.Gray else Color.Black,
-                    textAlign = TextAlign.Start,
-                    modifier = Modifier.weight(1f)
-
-                )
-                Icon(
-                    painter = painterResource(id = R.drawable.icon_calendar),
-                    contentDescription = null,
-                    tint = Color.Unspecified,
-                    modifier = Modifier
-                        .size(25.dp)
-                        .padding(start = 1.dp)
-                )
-
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = datePart,
+                        fontSize = 16.sp,
+                        color = if (datePart == "ДД.ММ.ГГ") Color.Gray else Color.Black,
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Icon(
+                        painter = painterResource(id = R.drawable.icon_calendar),
+                        contentDescription = null,
+                        tint = Color.Unspecified,
+                        modifier = Modifier.size(25.dp)
+                    )
+                }
             }
 
+            Spacer(modifier = Modifier.width(16.dp))
+
+            // Поле выбора времени
+            OutlinedButton(
+                onClick = {
+                    TimePickerDialog(
+                        context,
+                        { _, hourOfDay, minute ->
+                            val formattedTime = "${
+                                hourOfDay.toString().padStart(2, '0')
+                            }:${minute.toString().padStart(2, '0')}"
+                            // Обновляем только время, комбинируя с уже существующей датой
+                            onValueChange("$datePart $formattedTime")
+                        },
+                        calendar.get(Calendar.HOUR_OF_DAY),
+                        calendar.get(Calendar.MINUTE),
+                        true
+                    ).show()
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .height(56.dp),
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Black)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = timePart,
+                        fontSize = 16.sp,
+                        color = if (timePart == "00:00") Color.Gray else Color.Black,
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_time_track),
+                        contentDescription = null,
+                        tint = Color.Unspecified,
+                        modifier = Modifier.size(25.dp)
+                    )
+                }
+            }
         }
     }
 }

@@ -19,13 +19,15 @@ class AuthUseCase @Inject constructor(private val repository: AppRepository) {
                 // Передаем map в метод authorization
                 val response: AuthResponse = repository.authorization(name, password)
                 emit(Resource.Success<AuthResponse>(response))
+                Log.d("AuthUseCas2", "2222Trying to authorize with: $response")
+
             } catch (e: HttpException) {
                 emit(
                     Resource.Error<AuthResponse>(
                         e.localizedMessage ?: "Произошла непредвиденная ошибка"
                     )
                 )
-                Log.d("AuthUseCas2", "Trying to authorize with: $e")
+                Log.d("AuthUseCas2", "222222222222Trying to authorize with: $e")
             } catch (e: IOException) {
                 Log.d("AuthUseCas3", "Trying to authorize with: $e")
                 emit(Resource.Error<AuthResponse>("Не удалось связаться с сервером. Проверьте подключение к Интернету."))

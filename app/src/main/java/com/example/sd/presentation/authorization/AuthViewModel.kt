@@ -14,21 +14,23 @@ import com.example.sd.utils.Resource
 import com.example.sd.domain.athorization.AuthResponse
 import com.example.sd.domain.athorization.AuthUseCase
 import com.example.sd.domain.bits.BidsUseCase
-import com.example.sd.domain.bits.GetBids
 import com.example.sd.data.preference.CustomPreference
 import com.example.sd.domain.aboutMe.AboutMe
 import com.example.sd.domain.aboutMe.AboutMeUseCase
-import com.example.sd.domain.bits.CreatedUserId
 import com.example.sd.domain.bits.Data
-import com.example.sd.domain.bits.bidCategories.GetBidCategories
-import com.example.sd.domain.bits.bidCategories.GetBidCategoriesUseCase
 import com.example.sd.domain.changePassword.ChangePassword
 import com.example.sd.domain.changePassword.ChangePasswordUseCase
+import com.example.sd.domain.contacts.GetContactsUseCase
 import com.example.sd.presentation.states.AboutMeResponseState
 import com.example.sd.presentation.states.AuthResponseState
 import com.example.sd.presentation.states.BidsResponseState
 import com.example.sd.presentation.states.ChangePasswordResponseState
-import com.example.sd.presentation.states.GetBidCategoriesResponseState
+import com.example.sd.presentation.states.GetContactsResponseState
+import com.example.sd.utils.Values.DEPARTAMENT
+import com.example.sd.utils.Values.DEPARTAMENTID
+import com.example.sd.utils.Values.FIO
+import com.example.sd.utils.Values.ROLES
+import com.example.sd.utils.Values.USERID
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.launchIn
@@ -44,7 +46,8 @@ class AuthViewModel @Inject constructor(
     private val aboutMeUseCase: AboutMeUseCase,
     private val changePasswordUseCase: ChangePasswordUseCase,
     private val prefs: CustomPreference,
-    private val getBidCategoriesUseCase: GetBidCategoriesUseCase
+
+    private val getContactsUseCase: GetContactsUseCase
 ) : AndroidViewModel(application) {
 
 
@@ -64,8 +67,10 @@ class AuthViewModel @Inject constructor(
     private val _stateAboutMe = mutableStateOf(AboutMeResponseState())
     val stateAboutMe: State<AboutMeResponseState> = _stateAboutMe
 
-    private val _stategetBidCategories = mutableStateOf(GetBidCategoriesResponseState())
-    val stategetBidCategories: State<GetBidCategoriesResponseState> = _stategetBidCategories
+
+
+    private val _stateContacts = mutableStateOf(GetContactsResponseState())
+    val stateContacts: State<GetContactsResponseState> = _stateContacts
 
     private val _stateBids = mutableStateOf(BidsResponseState())
     val stateBids: State<BidsResponseState> = _stateBids
@@ -73,6 +78,7 @@ class AuthViewModel @Inject constructor(
 
     fun paging(pageSize: Int): Flow<PagingData<Data>> {
         return try {
+
             bidsUseCase.invoke(pageSize)
                 .cachedIn(viewModelScope)
         } catch (e: Exception) {
@@ -115,7 +121,12 @@ class AuthViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    fun changePassword(userId: String, password: String, password_confirmation: String,success: (Boolean, String?) -> Unit) {
+    fun changePassword(
+        userId: String,
+        password: String,
+        password_confirmation: String,
+        success: (Boolean, String?) -> Unit
+    ) {
         changePasswordUseCase.invoke(userId, password, password_confirmation)
             .onEach { result: Resource<ChangePassword> ->
                 when (result) {
@@ -160,7 +171,14 @@ class AuthViewModel @Inject constructor(
                     try {
                         val response: AboutMe? = result.data
                         _stateAboutMe.value = AboutMeResponseState(response = response)
-                        Log.e("AboutMeResponse", "AboutMeResponse->\n ${_stateAuth.value}")
+                        USERID.value = _stateAboutMe.value.response?.id.toString()
+                        _stateAboutMe.value.response?.roles!!.forEach { ROLES.value =it.name}
+                        DEPARTAMENT.value = _stateAboutMe.value.response?.department_id?.name.toString()
+                        DEPARTAMENTID.value = _stateAboutMe.value.response?.department_id?.id.toString()
+                        FIO.value = _stateAboutMe.value.response?.fio.toString()
+
+                        Log.e("AboutMeResponse22223", "AboutMeResponse->\n ${_stateAboutMe.value}")
+                        Log.e("AboutMeResponse22223", "AboutMeResponse->\n ${_stateAboutMe.value.response!!.department_id.name}")
                     } catch (e: Exception) {
                         Log.d("Exception", "${e.message} Exception")
                     }
@@ -177,31 +195,7 @@ class AuthViewModel @Inject constructor(
             }
         }.launchIn(viewModelScope)
     }
-    fun getBidCategories() {
 
-        getBidCategoriesUseCase.invoke().onEach { result: Resource<GetBidCategories> ->
-            when (result) {
-                is Resource.Success -> {
-                    try {
-                        val response: GetBidCategories? = result.data
-                        _stategetBidCategories.value = GetBidCategoriesResponseState(response = response)
-                        Log.e("stategetBidCategoriesResponse", "stategetBidCategoriesResponse->\n ${_stateAuth.value}")
-                    } catch (e: Exception) {
-                        Log.d("Exception", "${e.message} Exception")
-                    }
-                }
-
-                is Resource.Error -> {
-                    Log.e("stategetBidCategoriesResponse", "stategetBidCategoriesResponseError->\n ${result.message}")
-                    _stategetBidCategories.value = GetBidCategoriesResponseState(error = "${result.message}")
-                }
-
-                is Resource.Loading -> {
-                    _stategetBidCategories.value = GetBidCategoriesResponseState(isLoading = true)
-                }
-            }
-        }.launchIn(viewModelScope)
-    }
 
 
     fun updateSelectedOrder(order: Data) {

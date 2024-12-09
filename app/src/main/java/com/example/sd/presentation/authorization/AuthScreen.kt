@@ -69,8 +69,8 @@ import kotlinx.coroutines.delay
 fun AuthScreen(navController: NavController) {
     val viewModel: AuthViewModel = hiltViewModel()
     val dashboardViewModel: DashboardViewModel = hiltViewModel()
-    val name = remember { mutableStateOf("sadmin") }
-    val password = remember { mutableStateOf("12345678") }
+    val name = remember { mutableStateOf("fm") }
+    val password = remember { mutableStateOf("1") }
     val nameError = remember { mutableStateOf(false) }
     val passwordError = remember { mutableStateOf(false) }
     val errorMessage = remember { mutableStateOf("") }
@@ -220,9 +220,9 @@ fun AuthScreen(navController: NavController) {
                     color = Color.White
                 )
             }
-            if (errorMessage.value.isNotEmpty()) {
-                Text(text = errorMessage.value, color = Color.Red, fontSize = 14.sp)
-            }
+        }
+        if (errorMessage.value.isNotEmpty()) {
+            Text(text = errorMessage.value, color = Color.Red, fontSize = 14.sp)
         }
     }
 }

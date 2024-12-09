@@ -1,6 +1,7 @@
 package com.example.sd.presentation
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -69,13 +70,14 @@ fun BidsScreen(
 ) {
     // Создаем переменные для данных
     val pagingData: Flow<PagingData<Data>> = if (filterViewModel.selectedFilters.isEmpty()) {
-        viewModel.paging(50) // Без фильтра
+        viewModel.paging(10) // Без фильтра
     } else {
         filterViewModel.fetchFilteredBids() // С фильтром
     }
 
     val lazyPagingItems = pagingData.collectAsLazyPagingItems()
-
+    Log.i("Loading2222222","lazyPagingItems: ${lazyPagingItems}")
+    Log.i("Loading2222222","lazyPagingItemspaging: ${viewModel.paging(10).collectAsLazyPagingItems()}")
 
     Scaffold(
         topBar = {
@@ -111,7 +113,8 @@ fun BidsScreen(
                                 },
                                 textStyle = TextStyle.Default.copy(fontSize = 18.sp),
                                 modifier = Modifier
-                                    .fillMaxWidth(0.75f).fillMaxHeight(0.7f)
+                                    .fillMaxWidth(0.75f)
+                                    .height(53.dp)
                                     .background(
                                         MaterialTheme.colors.background,
                                         shape = RoundedCornerShape(12.dp)
@@ -156,7 +159,9 @@ fun BidsScreen(
 
                         }
                         Column(
-                            modifier = Modifier.fillMaxSize().fillMaxHeight(), verticalArrangement = Arrangement.Center
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .fillMaxHeight(), verticalArrangement = Arrangement.Center
                         ) {
 
                           Row(
@@ -195,6 +200,7 @@ fun BidsScreen(
                         .padding(horizontal = 16.dp)
                 ) {
                     items(lazyPagingItems) { item ->
+                        Log.d("Loading4444444", "item: $item")
                         item?.let {
                             ExpandableTicketCard(ticket = it) {
                                 viewModel.updateSelectedOrder(it)
@@ -391,13 +397,15 @@ fun FilterChip(filter: String, onRemove: () -> Unit) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxHeight()
+        modifier = Modifier
+            .fillMaxHeight()
             .border(
                 width = 1.dp,
                 color = Color(0xFFE2E8F0),
                 shape = RoundedCornerShape(size = 8.dp)
             )
-            .background(color = Color.White, shape = RoundedCornerShape(size = 8.dp)).padding(10.dp)
+            .background(color = Color.White, shape = RoundedCornerShape(size = 8.dp))
+            .padding(10.dp)
 
     ) {
         androidx.compose.material.Text(filter, color = Color.Black, fontSize = 14.sp)

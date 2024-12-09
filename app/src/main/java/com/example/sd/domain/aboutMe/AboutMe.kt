@@ -1,12 +1,12 @@
 package com.example.sd.domain.aboutMe
 
 data class AboutMe(
-    val account_id: Any,
-    val contact_id: Any,
+    val account_id: AccountId,
+    val contact_id: ContactId,
     val created_at: String,
-    val department_id: Any,
+    val department_id: DepartmentId,
     val email: String,
-    val ext_code: Any,
+    val ext_code: String,
     val fio: String,
     val id: String,
     val name: String,

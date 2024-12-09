@@ -32,8 +32,8 @@ class FilterViewModel @Inject constructor(
     private val filteredBidsUseCase: FilteredBidsUseCase
 ) : AndroidViewModel(application) {
 
-    var selectedDateTime by mutableStateOf("Выберите дату и время")
-    var selectedPlanDateTime by mutableStateOf("Выберите дату и время")
+    var selectedDateTime by mutableStateOf("ДД.ММ.ГГ 00:00")
+    var selectedPlanDateTime by mutableStateOf("ДД.ММ.ГГ 00:00")
     var selectedState by mutableStateOf("Выберите состояние")
     var selectedCategory by mutableStateOf("Выберите категорию")
     var selectedLine by mutableStateOf("Выберите линию")
@@ -45,13 +45,11 @@ class FilterViewModel @Inject constructor(
     private val _selectedFilters = mutableStateListOf<String>()
     val selectedFilters: List<String> get() = _selectedFilters
 
-    // Результаты запроса с фильтрами
-    private val _bids = mutableStateOf<PagingData<com.example.sd.domain.bits.Data>?>(null)
-    val bids: State<PagingData<com.example.sd.domain.bits.Data>?> get() = _bids
 
-    // Добавить фильтр
+
+
     fun addFilter(filter: String) {
-        if (filter != "Выберите дату и время" && filter != "Выберите состояние" &&
+        if (filter != "ДД.ММ.ГГ 00:00" && filter != "Выберите состояние" &&
             filter != "Выберите категорию" && filter != "Выберите линию" &&
             filter != "Выберите сервис" && filter != "Выберите контакт" &&
             filter != "Выберите ответственного" && !_selectedFilters.contains(filter)) {
@@ -63,8 +61,8 @@ class FilterViewModel @Inject constructor(
     fun removeFilter(filter: String) {
         _selectedFilters.remove(filter)
         when (filter) {
-            selectedDateTime -> selectedDateTime = "Выберите дату и время"
-            selectedPlanDateTime -> selectedPlanDateTime = "Выберите дату и время"
+            selectedDateTime -> selectedDateTime = "ДД.ММ.ГГ 00:00"
+            selectedPlanDateTime -> selectedPlanDateTime = "ДД.ММ.ГГ 00:00"
             selectedState -> selectedState = "Выберите состояние"
             selectedCategory -> selectedCategory = "Выберите категорию"
             selectedLine -> selectedLine = "Выберите линию"
@@ -77,8 +75,8 @@ class FilterViewModel @Inject constructor(
     // Очистить все фильтры
     fun clearFilters() {
         _selectedFilters.clear()
-        selectedDateTime = "Выберите дату и время"
-        selectedPlanDateTime = "Выберите дату и время"
+        selectedDateTime = "ДД.ММ.ГГ 00:00"
+        selectedPlanDateTime = "ДД.ММ.ГГ 00:00"
         selectedState = "Выберите состояние"
         selectedCategory = "Выберите категорию"
         selectedLine = "Выберите линию"
@@ -91,10 +89,10 @@ class FilterViewModel @Inject constructor(
     fun getFilterMap(): Map<String, String> {
         val filters = mutableMapOf<String, String>()
 
-        if (selectedDateTime != "Выберите дату и время") {
+        if (selectedDateTime != "ДД.ММ.ГГ 00:00") {
             filters["filter[created]"] = selectedDateTime
         }
-        if (selectedPlanDateTime != "Выберите дату и время") {
+        if (selectedPlanDateTime != "ДД.ММ.ГГ 00:00") {
             filters["filter[solution_date]"] = selectedPlanDateTime
         }
         if (selectedState != "Выберите состояние") {
@@ -130,10 +128,10 @@ class FilterViewModel @Inject constructor(
             filteredBidsUseCase(filters)
                 .cachedIn(viewModelScope) // Сохраняем данные при повороте экрана
         } catch (e: Exception) {
-            // Логирование или дополнительная обработка ошибки
-            Log.e("FilterViewModel", "Ошибка при загрузке данных: ${e.message}")
-            // Если ошибка, возвращаем пустой поток или любой другой fallback Flow
-            flowOf(PagingData.empty())
+            Log.e("ViewModel", "Ошибка при загрузке данных: ${e.message}")
+
+            throw Exception("Ошибка при загрузке данных: ${e.message}")
+
         }
     }
 
