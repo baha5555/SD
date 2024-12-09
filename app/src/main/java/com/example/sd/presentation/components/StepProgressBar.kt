@@ -30,6 +30,7 @@ fun StepProgressBar(viewModel: CreateBidsViewModel) {
         animationSpec = tween(durationMillis = progressAnimDuration, easing = FastOutLinearInEasing)
     )
 
+
     LinearProgressIndicator(
         progress = progressAnimation,
         color = Color(0xFF194BFB),
