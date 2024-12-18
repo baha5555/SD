@@ -47,7 +47,7 @@ class FilteredBidsPager(
                 nextKey = nextKey
             )
         } catch (e: Exception) {
-            Log.e("FilteredBidsPager", "Ошибка при загрузке данных: ${e.message}")
+            Log.d("FilteredBidsPager", "Ошибка при загрузке данных: ${e.message}")
             LoadState.Error(e)  // Возвращаем ошибку в PagingSource
             throw Exception("Ошибка при загрузке данных: ${e.message}")
         }

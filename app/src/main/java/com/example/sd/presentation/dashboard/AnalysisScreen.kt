@@ -54,11 +54,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun AnalysisScreen(navController: NavController, dashboardViewModel: DashboardViewModel) {
     val bidsDashboard = dashboardViewModel.stateDashboard.value.response?.data?.bids
-    Log.e("Dashboard_total", "Dashboard_total->${bidsDashboard?.total?.count}")
-    Log.e(
-        "Dashboard_current_month",
-        "Dashboard_current_month->${bidsDashboard?.current_month?.count}"
-    )
+
     CustomBackHandle(true)
     Column(
         modifier = Modifier
@@ -230,7 +226,6 @@ fun CategoryChartScreen(dashboardViewModel: DashboardViewModel) {
 
 
 
-    Log.e("Dashboard_total", "Dashboard_total   ->     ${total}")
     Column(
         modifier = Modifier
             .fillMaxSize()

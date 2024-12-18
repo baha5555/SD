@@ -76,8 +76,6 @@ fun BidsScreen(
     }
 
     val lazyPagingItems = pagingData.collectAsLazyPagingItems()
-    Log.i("Loading2222222","lazyPagingItems: ${lazyPagingItems}")
-    Log.i("Loading2222222","lazyPagingItemspaging: ${viewModel.paging(10).collectAsLazyPagingItems()}")
 
     Scaffold(
         topBar = {

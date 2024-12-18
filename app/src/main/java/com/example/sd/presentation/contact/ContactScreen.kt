@@ -32,6 +32,8 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -43,6 +45,8 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -73,7 +77,6 @@ fun ContactScreen(
 
     val lazyPagingItems = pagingData.collectAsLazyPagingItems()
     Log.i("Loading2222222","lazyPagingItems: ${lazyPagingItems}")
-    Log.i("Loading2222222","lazyPagingItemspaging: ${viewModel.searchContact().collectAsLazyPagingItems()}")
 
     Scaffold(
         topBar = {
@@ -84,11 +87,29 @@ fun ContactScreen(
                 contentColor = Color.Black,
                 title = {
                     Column {
-                        Text(
-                            text = "Обращения",
-                            fontSize = 32.sp,
-                            color = Color.Black, fontWeight = FontWeight.Bold
-                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp)
+                                .padding(top = 4.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            IconButton(onClick = { navController.popBackStack() }) {
+                                Icon(
+                                    imageVector = Icons.Default.ArrowBack,
+                                    contentDescription = "Back"
+                                )
+                            }
+                            Text(
+                                text = "Контакты",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            IconButton(onClick = { /* действие для иконки копирования */ }) {
+
+                            }
+                        }
 
                         Row(
                             modifier = Modifier
@@ -134,7 +155,7 @@ fun ContactScreen(
                             )
                             Box(
                                 modifier = Modifier
-                                    .height(53.dp)
+                                    .height(50.dp)
                                     .width(80.dp)
                                     .padding(start = 20.dp)
                                     .border(
@@ -144,7 +165,7 @@ fun ContactScreen(
                                     ),
                                 contentAlignment = Alignment.Center
                             ) {
-                                IconButton(onClick = { navController.navigate("FilterScreen") }) {
+                                IconButton(onClick = { navController.navigate("ContactFilterScreen") }) {
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_filter),
                                         contentDescription = "Фильтр",
@@ -169,9 +190,9 @@ fun ContactScreen(
                                 horizontalArrangement = Arrangement.spacedBy(6.dp),
                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                filterViewModel.selectedFilters.forEach { filter ->
-                                    FilterChip(filter) { filterViewModel.removeFilter(filter) }
-                                }
+                             /* viewModel.selectedFilters.forEach { filter ->
+                                    FilterChip(filter) { viewModel.removeFilter(filter) }
+                                }*/
                             }
                         }
                     }
@@ -200,7 +221,7 @@ fun ContactScreen(
                         item?.let {
                             ExpandableTicketCard(ticket = it) {
                                 viewModel.updateSelectedContact(it)
-                                navController.navigate("DetailScreen")
+                                navController.navigate("DetailScreenContact")
                             }
                         }
                     }
@@ -248,7 +269,7 @@ fun ExpandableTicketCard(ticket: com.example.sd.domain.contacts.Data, onClick: (
     ) {
         Column(Modifier.padding(16.dp)) {
             Text(
-                text = ticket.created_at.toString(),
+                text = ticket.contact_type_id?.name.toString(),
                 style = TextStyle(
                     fontSize = 14.sp,
                     lineHeight = 18.sp,
@@ -273,18 +294,22 @@ fun ExpandableTicketCard(ticket: com.example.sd.domain.contacts.Data, onClick: (
             Spacer(Modifier.height(12.dp))
 
 
-          /*  FlowRow(
+           FlowRow(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Element(label = ticket.mobile_phone.toString())
-                Element2(label = ticket.bid_status_id?.name.toString())
-                Element3(label = ticket.bid_category_id?.name.toString())
-                Element4(label = ticket.support_level_id?.name.toString())
-            }*/
+               if(ticket.mobile_phone!=null){Element(label = ticket.mobile_phone)}
+               if(ticket.casta_id!=null){Element2(label = ticket.casta_id.name.toString())}
+               if(ticket.branch_id!=null){Element3(label = ticket.branch_id.name.toString())}
+               if(ticket.department_id!=null){Element4(label = ticket.department_id.name.toString())}
+
+
+
+
+            }
 
         }
     }
@@ -301,7 +326,7 @@ fun Element(label: String) {
             .padding(8.dp)
     ) {
         Text(
-            text = label, style = TextStyle(
+            text = label,maxLines = 1,overflow = TextOverflow.Ellipsis, style = TextStyle(
                 fontSize = 12.sp,
                 lineHeight = 18.sp,
                 fontFamily = FontFamily(Font(R.font.inter)),
@@ -325,8 +350,9 @@ fun Element2(label: String) {
             .padding(8.dp)
     ) {
         Text(
-            text = label, style = TextStyle(
+            text = label,maxLines = 1,overflow = TextOverflow.Ellipsis, style = TextStyle(
                 fontSize = 12.sp,
+
                 lineHeight = 18.sp,
                 fontFamily = FontFamily(Font(R.font.inter)),
                 fontWeight = FontWeight.SemiBold,
@@ -350,9 +376,10 @@ fun Element3(label: String) {
             .padding(8.dp)
     ) {
         Text(
-            text = label, style = TextStyle(
+            text = label,maxLines = 1,overflow = TextOverflow.Ellipsis, style = TextStyle(
                 fontSize = 12.sp,
                 lineHeight = 18.sp,
+
                 fontFamily = FontFamily(Font(R.font.inter)),
                 fontWeight = FontWeight.SemiBold,
                 color = Color(0xFF2C2D2E),
@@ -374,7 +401,7 @@ fun Element4(label: String) {
             .padding(8.dp)
     ) {
         Text(
-            text = label, style = TextStyle(
+            text = label,maxLines = 1,overflow = TextOverflow.Ellipsis, style = TextStyle(
                 fontSize = 12.sp,
                 lineHeight = 18.sp,
                 fontFamily = FontFamily(Font(R.font.inter)),

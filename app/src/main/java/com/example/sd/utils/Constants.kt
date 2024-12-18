@@ -8,7 +8,7 @@ object Constants {
     val TAG = "TAG"
     var FCM_TOKEN: String? = ""
     const val LOCAL_BASE_URL = "http://10.250.1.96/"
-    const val TEST_URL = "http://192.168.206.53/api/v1/"
+    const val TEST_URL = "http://192.168.206.54/api/v1/"
     const val BASE_URL = "https://api-sd.eskhata.tj/api/v1/"
     const val URL = TEST_URL
     var IDENTIFY_TO_SCREEN = ""

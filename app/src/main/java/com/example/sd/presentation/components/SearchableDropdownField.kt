@@ -17,7 +17,9 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,14 +42,18 @@ fun SearchableDropdownField(
     options: List<String>,
     expandedState: MutableState<String?>,
     currentId: String,
-    initialValue: String, // Начальное значение для отображения
+    initialValue: String,
     onOptionSelected: (String) -> Unit
 ) {
     var searchQuery by remember { mutableStateOf(initialValue) }
+
+    LaunchedEffect(initialValue) {
+        searchQuery = initialValue
+    }
     val filteredOptions = if (searchQuery.isEmpty()) options else options.filter {
         it.contains(searchQuery, ignoreCase = true)
     }
-    val isExpanded = expandedState.value == currentId
+    val isExpanded = expandedState.value == currentId && filteredOptions.isNotEmpty()
 
     Column(
         modifier = Modifier
@@ -73,6 +79,7 @@ fun SearchableDropdownField(
             value = searchQuery,
             onValueChange = { query ->
                 searchQuery = query
+                onOptionSelected(searchQuery)
                 expandedState.value = currentId
             },
             placeholder = {
@@ -84,8 +91,10 @@ fun SearchableDropdownField(
             },
             singleLine = true,
             trailingIcon = {
-                Icon(
-                    painter = painterResource(id = R.drawable.icon_down),
+                Icon(modifier = Modifier.clickable {
+                    expandedState.value = null
+                },
+                    painter =if(isExpanded) painterResource(id = R.drawable.icon_up) else painterResource(id = R.drawable.icon_down) ,
                     contentDescription = null,
                     tint = Color(0xFFA0AEC0)
                 )
@@ -102,7 +111,7 @@ fun SearchableDropdownField(
         )
 
         // Динамический список
-        if (isExpanded && filteredOptions.isNotEmpty()) {
+        if (isExpanded ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()

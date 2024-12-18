@@ -1,6 +1,7 @@
 package com.example.sd.domain.contacts
 
 import android.util.Log
+import androidx.paging.LoadState
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -17,15 +18,15 @@ import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
-class GetContactsUseCase  @Inject constructor(
+class GetContactsUseCase @Inject constructor(
     private val applicationApi: ApplicationApi,
     private val prefs: CustomPreference
 ) {
-    operator fun invoke(filters:  Map<String, String>): Flow<PagingData<Data>> {
-        return   Pager(
-                PagingConfig(pageSize = 10),
-                pagingSourceFactory = { ContactsPager(applicationApi, prefs, filters) }
-            ).flow
+    operator fun invoke(filters: Map<String, String>): Flow<PagingData<Data>> {
+        return Pager(
+            PagingConfig(pageSize = 1),
+            pagingSourceFactory = { ContactsPager(applicationApi, prefs, filters) }
+        ).flow
 
     }
 }
@@ -33,15 +34,18 @@ class GetContactsUseCase  @Inject constructor(
 class ContactsPager(
     private val applicationApi: ApplicationApi,
     private val prefs: CustomPreference,
-    private val filters:  Map<String, String>
+    private val filters: Map<String, String>
 ) : PagingSource<Int, Data>() {
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult.Page<Int, Data> {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Data> {
         val pageNumber = params.key ?: 1
-        val response = applicationApi.getSearchContact(prefs.getAccessToken(),filters)
+        val result =
+            runCatching { applicationApi.getSearchContact(prefs.getAccessToken(), filters) }
+        val response = result.getOrNull() ?: return LoadResult.Error<Int, Data>(Exception(""))
 
-        val prevKey = if (pageNumber > 1) pageNumber - 1 else null
-        val nextKey = if (response.data.isNotEmpty()) pageNumber + 1 else null
+        val prevKey = if (pageNumber == 1) null else pageNumber - 1
+        val nextKey = if (response.data.isEmpty()) null else pageNumber + 1
+
 
         return LoadResult.Page(
             data = response.data,

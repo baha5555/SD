@@ -16,6 +16,10 @@ import com.example.sd.domain.dashboard.Dashboard
 import com.example.sd.domain.entityNumber.EntityNumber
 import com.example.sd.domain.service.serviceItems.ServiceItems
 import com.example.sd.domain.service.servicePacts.ServicePacts
+import com.example.sd.domain.contacts.contactType.ContactType
+import com.example.sd.domain.knowledgeBases.GetKnowledgeBases
+import com.example.sd.domain.knowledgeBases.knowledgeBasesDetail.KnowledgeBasesDetail
+import com.example.sd.domain.knowledgeBases.knowledgeBasesType.KnowledgeBasesType
 
 
 interface AppRepository {
@@ -74,5 +78,10 @@ interface AppRepository {
     ): BidStore
 
     suspend fun generateEntityNumber(entityType: String): EntityNumber
+
+    suspend fun getContactTypes(): ContactType
+    suspend fun getKnowledgeBaseTypes(): KnowledgeBasesType
+    suspend fun getKnowledgeBases(filters: Map<String, String>): GetKnowledgeBases
+    suspend fun getKnowledgeBasesDetail(knowledgeBaseId: String): KnowledgeBasesDetail
 }
 

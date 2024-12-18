@@ -10,7 +10,7 @@ import com.example.sd.data.remote.ApplicationApi
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class GetServiceItemsUseCase  @Inject constructor(
+class GetServiceItemsUseCase @Inject constructor(
     private val applicationApi: ApplicationApi,
     private val prefs: CustomPreference
 ) {
@@ -26,12 +26,12 @@ class GetServiceItemsUseCase  @Inject constructor(
 class AccountsPager(
     private val applicationApi: ApplicationApi,
     private val prefs: CustomPreference,
-    private val filters:  Map<String, String>
+    private val filters: Map<String, String>
 ) : PagingSource<Int, Data>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult.Page<Int, Data> {
         val pageNumber = params.key ?: 1
-        val response = applicationApi.getServiceItems(prefs.getAccessToken(),filters)
+        val response = applicationApi.getServiceItems(prefs.getAccessToken(), filters)
 
         val prevKey = if (pageNumber > 1) pageNumber - 1 else null
         val nextKey = if (response.data.isNotEmpty()) pageNumber + 1 else null

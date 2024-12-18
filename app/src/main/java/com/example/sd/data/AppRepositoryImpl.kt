@@ -19,6 +19,10 @@ import com.example.sd.domain.dashboard.Dashboard
 import com.example.sd.domain.entityNumber.EntityNumber
 import com.example.sd.domain.service.serviceItems.ServiceItems
 import com.example.sd.domain.service.servicePacts.ServicePacts
+import com.example.sd.domain.contacts.contactType.ContactType
+import com.example.sd.domain.knowledgeBases.GetKnowledgeBases
+import com.example.sd.domain.knowledgeBases.knowledgeBasesDetail.KnowledgeBasesDetail
+import com.example.sd.domain.knowledgeBases.knowledgeBasesType.KnowledgeBasesType
 
 
 class AppRepositoryImpl(
@@ -131,4 +135,8 @@ class AppRepositoryImpl(
     )
 
     override suspend fun generateEntityNumber(entityType: String): EntityNumber  = api.generateEntityNumber(prefs.getAccessToken(), entityType)
-}
+    override suspend fun getContactTypes(): ContactType = api.getContactTypes(prefs.getAccessToken())
+    override suspend fun getKnowledgeBaseTypes(): KnowledgeBasesType = api.getKnowledgeBaseTypes(prefs.getAccessToken())
+
+    override suspend fun getKnowledgeBases(filters: Map<String, String>): GetKnowledgeBases  = api.getKnowledgeBases(prefs.getAccessToken(),filters)
+    override suspend fun getKnowledgeBasesDetail(knowledgeBaseId: String): KnowledgeBasesDetail  = api.getKnowledgeBasesDetail(prefs.getAccessToken(),knowledgeBaseId)}

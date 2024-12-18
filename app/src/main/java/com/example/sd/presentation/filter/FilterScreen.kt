@@ -35,6 +35,7 @@ import androidx.compose.material.TextButton
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -99,6 +100,9 @@ fun FilterScreen(navController: NavController, viewModel: FilterViewModel) {
         selectedService = viewModel.selectedService
         selectedContact = viewModel.selectedContact
         selectedResponsible = viewModel.selectedResponsible
+    }
+    SideEffect {
+
     }
 
     ModalBottomSheetLayout(
@@ -299,11 +303,11 @@ fun FilterDropdown(
     scope: CoroutineScope,
     openBottomSheet: (String, List<String>) -> Unit
 ) {
-    val accountsViewModel : AccountsViewModel = hiltViewModel()
     val searchViewModel : ContactViewModel = hiltViewModel()
-    val lazyPagingItemsForServiceItems = accountsViewModel.searchAccounts().collectAsLazyPagingItems()
+    val accountsViewModel : AccountsViewModel = hiltViewModel()
+    val lazyPagingItemsForServiceItems = accountsViewModel.searchServiceItems().collectAsLazyPagingItems()
     val serviceItems = remember { mutableStateOf(listOf<String>()) }
-    LaunchedEffect(lazyPagingItemsForServiceItems) {
+    LaunchedEffect(lazyPagingItemsForServiceItems.itemCount) {
         snapshotFlow { lazyPagingItemsForServiceItems.itemCount }
             .collect { itemCount ->
                 val names = (0 until itemCount).mapNotNull { index ->
@@ -314,7 +318,7 @@ fun FilterDropdown(
     }
     val lazyPagingItems = searchViewModel.searchContact().collectAsLazyPagingItems()
     val contact = remember { mutableStateOf(listOf<String>()) }
-    LaunchedEffect(lazyPagingItems) {
+    LaunchedEffect(lazyPagingItems.itemCount) {
         snapshotFlow { lazyPagingItems.itemCount }
             .collect { itemCount ->
                 val names = (0 until itemCount).mapNotNull { index ->

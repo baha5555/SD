@@ -20,7 +20,6 @@ import com.example.sd.domain.aboutMe.AboutMeUseCase
 import com.example.sd.domain.bits.Data
 import com.example.sd.domain.changePassword.ChangePassword
 import com.example.sd.domain.changePassword.ChangePasswordUseCase
-import com.example.sd.domain.contacts.GetContactsUseCase
 import com.example.sd.presentation.states.AboutMeResponseState
 import com.example.sd.presentation.states.AuthResponseState
 import com.example.sd.presentation.states.BidsResponseState
@@ -47,7 +46,6 @@ class AuthViewModel @Inject constructor(
     private val changePasswordUseCase: ChangePasswordUseCase,
     private val prefs: CustomPreference,
 
-    private val getContactsUseCase: GetContactsUseCase
 ) : AndroidViewModel(application) {
 
 
@@ -94,7 +92,7 @@ class AuthViewModel @Inject constructor(
                     try {
                         val response: AuthResponse? = result.data
                         _stateAuth.value = AuthResponseState(response = response)
-                        Log.e("TariffsResponse", "AuthResponse->\n ${_stateAuth.value}")
+                        Log.d("TariffsResponse", "AuthResponse->\n ${_stateAuth.value}")
                         prefs.setAccessToken("Bearer ${response?.access_token}")
                         success.invoke(true, null)
 
@@ -107,7 +105,7 @@ class AuthViewModel @Inject constructor(
                 }
 
                 is Resource.Error -> {
-                    Log.e("TariffsResponse", "AuthResponseError->\n ${result.message}")
+                    Log.d("TariffsResponse", "AuthResponseError->\n ${result.message}")
                     _stateAuth.value = AuthResponseState(error = "${result.message}")
 
                     // Вернуть ошибку авторизации
@@ -135,7 +133,7 @@ class AuthViewModel @Inject constructor(
                             val response: ChangePassword? = result.data
                             _stateChangePassword.value =
                                 ChangePasswordResponseState(response = response)
-                            Log.e(
+                            Log.d(
                                 "ChangePasswordResponse",
                                 "ChangePasswordResponse->\n ${_stateAuth.value}"
                             )
@@ -147,7 +145,7 @@ class AuthViewModel @Inject constructor(
                     }
 
                     is Resource.Error -> {
-                        Log.e(
+                        Log.d(
                             "ChangePasswordResponse",
                             "ChangePasswordResponseError->\n ${result.message}"
                         )
@@ -177,8 +175,8 @@ class AuthViewModel @Inject constructor(
                         DEPARTAMENTID.value = _stateAboutMe.value.response?.department_id?.id.toString()
                         FIO.value = _stateAboutMe.value.response?.fio.toString()
 
-                        Log.e("AboutMeResponse22223", "AboutMeResponse->\n ${_stateAboutMe.value}")
-                        Log.e("AboutMeResponse22223", "AboutMeResponse->\n ${_stateAboutMe.value.response!!.department_id.name}")
+                        Log.d("AboutMeResponse22223", "AboutMeResponse->\n ${_stateAboutMe.value}")
+                        Log.d("AboutMeResponse22223", "AboutMeResponse->\n ${_stateAboutMe.value.response!!.department_id.name}")
                     } catch (e: Exception) {
                         Log.d("Exception", "${e.message} Exception")
                     }
