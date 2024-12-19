@@ -1,5 +1,6 @@
 package com.example.sd.domain.service.servicePacts
 
+import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -8,6 +9,7 @@ import androidx.paging.PagingState
 import com.example.sd.data.preference.CustomPreference
 import com.example.sd.data.remote.ApplicationApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import javax.inject.Inject
 
 class GetServicePactsUseCase  @Inject constructor(
@@ -18,7 +20,13 @@ class GetServicePactsUseCase  @Inject constructor(
         return   Pager(
                 PagingConfig(pageSize = 10),
                 pagingSourceFactory = { AccountsPager(applicationApi, prefs, filters) }
-            ).flow
+            ).flow.catch { e ->
+            emit(
+                PagingData.empty<Data>() // Возвращаем пустой список данных
+            )
+            // Логируем ошибку
+            Log.e("KnowledgeBasesUseCase", "Ошибка при загрузке данных: ${e.message}", e)
+        }
 
     }
 }
@@ -34,7 +42,7 @@ class AccountsPager(
         val response = applicationApi.getServicePacts(prefs.getAccessToken(),filters)
 
         val prevKey = if (pageNumber > 1) pageNumber - 1 else null
-        val nextKey = if (response.data.isNotEmpty()) pageNumber + 1 else null
+        val nextKey = if (response.data.isNullOrEmpty()) null else pageNumber + 1
 
         return LoadResult.Page(
             data = response.data,

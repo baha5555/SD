@@ -276,7 +276,7 @@ fun KnowledgeBasesFilterScreen(
                             .fillMaxWidth()
                             .height(48.dp)
                     ) {
-                        Text("Показать (   результата)")
+                        Text("Показать результат")
                     }
                 }
             }

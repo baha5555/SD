@@ -65,6 +65,7 @@ class KnowledgeBasesViewModel @Inject constructor(
     var selectedCreate by mutableStateOf("")
     var selectedUpdate by mutableStateOf("")
     var selectedTeg by mutableStateOf("")
+    var selectedName by mutableStateOf("")
 
 
     private val _selectedFilters1 = mutableStateListOf<String>()
@@ -99,6 +100,9 @@ class KnowledgeBasesViewModel @Inject constructor(
         if (selectedTeg.isNotEmpty()) {
             _selectedFilters.add(selectedTeg)
         }
+        if (selectedName.isNotEmpty()) {
+            _selectedFilters.add(selectedName)
+        }
 
     }
 
@@ -113,6 +117,7 @@ class KnowledgeBasesViewModel @Inject constructor(
             selectedCreate -> selectedCreate = ""
             selectedUpdate -> selectedUpdate = ""
             selectedTeg -> selectedTeg = ""
+            selectedName -> selectedName = ""
 
         }
     }
@@ -127,6 +132,7 @@ class KnowledgeBasesViewModel @Inject constructor(
         selectedCreate = ""
         selectedUpdate = ""
         selectedTeg = ""
+        selectedName = ""
 
     }
 
@@ -206,6 +212,9 @@ class KnowledgeBasesViewModel @Inject constructor(
         }
         if (selectedTeg != "Введите тег" && selectedTeg.isNotEmpty()) {
             filters["filter[tag]"] = selectedTeg
+        }
+        if (selectedName != "") {
+            filters["filter[name]"] = selectedName
         }
 
         return filters

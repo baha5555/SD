@@ -13,6 +13,7 @@ import com.example.sd.data.remote.ApplicationApi
 import com.example.sd.domain.bits.bidPriorities.GetBidPriorities
 import com.example.sd.utils.Resource
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
 import java.io.IOException
@@ -26,7 +27,13 @@ class GetContactsUseCase @Inject constructor(
         return Pager(
             PagingConfig(pageSize = 1),
             pagingSourceFactory = { ContactsPager(applicationApi, prefs, filters) }
-        ).flow
+        ).flow.catch { e ->
+            emit(
+                PagingData.empty<Data>() // Возвращаем пустой список данных
+            )
+            // Логируем ошибку
+            Log.e("KnowledgeBasesUseCase", "Ошибка при загрузке данных: ${e.message}", e)
+        }
 
     }
 }
@@ -44,7 +51,7 @@ class ContactsPager(
         val response = result.getOrNull() ?: return LoadResult.Error<Int, Data>(Exception(""))
 
         val prevKey = if (pageNumber == 1) null else pageNumber - 1
-        val nextKey = if (response.data.isEmpty()) null else pageNumber + 1
+        val nextKey = if (response.data.isNullOrEmpty()) null else pageNumber + 1
 
 
         return LoadResult.Page(

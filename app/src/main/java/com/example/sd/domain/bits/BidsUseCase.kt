@@ -10,20 +10,24 @@ import androidx.paging.PagingState
 import com.example.sd.data.preference.CustomPreference
 import com.example.sd.data.remote.ApplicationApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import javax.inject.Inject
 
 class BidsUseCase @Inject constructor(private val applicationApi: ApplicationApi,
                                       private val prefs: CustomPreference
 ) {
     operator fun invoke(pageSize: Int): Flow<PagingData<Data>> {
-        return try {
-            Pager(
-                PagingConfig(pageSize = pageSize),
-                pagingSourceFactory = { BidsPager(applicationApi, prefs) }
-            ).flow
-        } catch (e: Exception) {
-            // Обработка ошибки, например, запись в лог или отображение сообщения пользователю
-            throw Exception("Ошибка при загрузке данных: ${e.message}")
+        return Pager(
+            PagingConfig(pageSize = pageSize),
+            pagingSourceFactory = { BidsPager(applicationApi, prefs) }
+        ).flow.catch { e ->
+            emit(
+                PagingData.empty<Data>() // Возвращаем пустой список данных
+            )
+            // Логируем ошибку
+            Log.e("KnowledgeBasesUseCase", "Ошибка при загрузке данных: ${e.message}", e)
+
+
         }
     }
 }
@@ -38,7 +42,7 @@ class BidsPager(
         val response = applicationApi.getBids(prefs.getAccessToken(),pageNumber)
         Log.d("BidsPager","$response")
         val prevKey = if (pageNumber > 0) pageNumber - 1 else null
-        val nextKey = if (response.data.size!=null) pageNumber + 1 else null
+        val nextKey = if (response.data.isNullOrEmpty()) null else pageNumber + 1
         return LoadResult.Page(
             data = response.data,
             prevKey = prevKey,

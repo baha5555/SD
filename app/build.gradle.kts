@@ -73,6 +73,7 @@ dependencies {
     implementation(libs.hilt.navigation.compose)
     implementation(libs.swiperefresh)
     implementation(libs.runtime)
+    implementation(libs.compose.webview)
 
     implementation(libs.androidx.paging)
     implementation(libs.androidx.appcompat)

@@ -23,6 +23,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
@@ -36,6 +38,8 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,6 +49,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -71,6 +76,8 @@ fun KnowledgeBasesScreen(
     val pagingData: Flow<PagingData<com.example.sd.domain.knowledgeBases.Data>> =
         knowledgeBasesViewModel.filterKnowledgeBases()
 
+    val searchText = remember { mutableStateOf("") }
+
 
     val lazyPagingItems = pagingData.collectAsLazyPagingItems()
     LaunchedEffect(knowledgeBasesViewModel.selectedFilters) {
@@ -95,9 +102,7 @@ fun KnowledgeBasesScreen(
                                 .background(Color.White)
                         ) {
                             IconButton(onClick = {
-                                navController.navigate("KnowledgeBasesScreen") {
-                                    popUpTo("KnowledgeBasesFilterScreen") { inclusive = true }
-                                }
+                               navController.popBackStack()
                             }) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.icon_left),
@@ -127,13 +132,21 @@ fun KnowledgeBasesScreen(
                         ) {
 
                             OutlinedTextField(
-                                value = "",
-                                onValueChange = {},
+                                value = knowledgeBasesViewModel.selectedName,
+                                onValueChange = { newText ->
+                                    knowledgeBasesViewModel.selectedName = newText
+                                    lazyPagingItems.refresh()
+                                },
                                 placeholder = {
                                     Text(
-                                        text = "Поиск",
-                                        fontSize = 18.sp,
-                                        color = Color(0xFFAFBCCB)
+                                        text = "Поиск по названию",
+                                        style = TextStyle(
+                                            fontSize = 14.sp,
+                                            lineHeight = 21.sp,
+                                            fontWeight = FontWeight(500),
+                                            color = Color(0xFFA0AEC0),
+                                            letterSpacing = 0.2.sp,
+                                        )
                                     )
                                 },
                                 textStyle = TextStyle.Default.copy(fontSize = 18.sp),
@@ -159,6 +172,15 @@ fun KnowledgeBasesScreen(
                                     errorBorderColor = Color(0xFFE2E8F0),
                                     cursorColor = Color(0xFF004FC7),
                                     textColor = Color.Black
+                                ),
+                                keyboardOptions = KeyboardOptions.Default.copy(
+                                    imeAction = ImeAction.Search
+                                ),
+                                keyboardActions = KeyboardActions(
+                                    onSearch = {
+
+                                        knowledgeBasesViewModel.showFilter()
+                                    }
                                 )
                             )
                             Box(

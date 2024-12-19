@@ -1,6 +1,9 @@
+@file:Suppress("DEPRECATION")
+
 package com.example.sd.presentation.knowledgeBases
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.DatePickerDialog
 import android.os.Build
 import android.os.Bundle
@@ -8,9 +11,9 @@ import android.text.Html
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
+
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -30,6 +33,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -76,20 +80,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.view.ViewCompat.setLayerType
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.rememberImagePainter
 import com.example.sd.R
-import com.example.sd.presentation.authorization.AuthViewModel
-import com.example.sd.presentation.components.SearchableDropdownField
-import com.example.sd.presentation.contact.ContactViewModel
-import com.example.sd.presentation.createBids.Status
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.launch
-import java.util.Calendar
+import com.kevinnzou.web.WebView
+import com.kevinnzou.web.rememberWebViewStateWithHTMLData
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -98,18 +96,7 @@ fun KnowledgeBasesDetailScreen(navController: NavController, viewModel: Knowledg
     val data = viewModel.stateGetKnowledgeBasesDetail.value.response?.data
     val context = LocalContext.current
     val webView = remember { WebView(context) }
-
-    // Обработка нажатия на кнопку "Back"
-    val clearWebView = rememberUpdatedState {
-        // Очистка WebView
-        webView.apply {
-            stopLoading()  // Останавливаем текущую загрузку
-            clearHistory()  // Очищаем историю
-            clearCache(true)  // Очищаем кэш
-            destroy()  // Уничтожаем WebView
-        }
-    }
-
+    webView.loadDataWithBaseURL(null, data?.notes.toString(), "text/html", "UTF-8", null)
 
     Scaffold(
         topBar = {
@@ -128,10 +115,9 @@ fun KnowledgeBasesDetailScreen(navController: NavController, viewModel: Knowledg
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(onClick = {
-
-                        clearWebView.value()
-
-                        navController.popBackStack() }) {
+                        webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+                        navController.popBackStack()
+                    }) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "Back"
@@ -179,13 +165,19 @@ fun KnowledgeBasesDetailScreen(navController: NavController, viewModel: Knowledg
                                     letterSpacing = 0.2.sp,
                                 )
                             )
+                            // HtmlWebViewScreen(data.notes ?: "Нет описания")
+                            // WebView(state = rememberWebViewStateWithHTMLData(data =data.notes ?: "Нет описания", ), modifier = Modifier.fillMaxSize())
 
-                            HtmlContentScreen(data.notes ?: "Нет описания")
-
-
-
-                            Divider(modifier = Modifier.padding(vertical = 16.dp))
-
+                            if(data.notes != null){
+                                AndroidView(
+                                    factory = { webView },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .wrapContentHeight() // Автоматическая высота
+                                )
+                                // CustomWebView(data.notes ?: "Нет описания")
+                                Divider(modifier = Modifier.padding(vertical = 16.dp))
+                            }
                             InfoItem(
                                 label = "Тип",
                                 value = data.knowledge_base_type_id?.name ?: "Не указан"
@@ -240,99 +232,3 @@ fun InfoItem(label: String, value: String, valueColor: Color = Color.Black) {
 }
 
 
-@Composable
-fun DisplayHtmlContent(htmlContent: String) {
-
-    val styledText = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        Html.fromHtml(htmlContent, Html.FROM_HTML_MODE_LEGACY)
-    } else {
-        @Suppress("DEPRECATION")
-        Html.fromHtml(htmlContent)
-    }
-
-    Column {
-        Text(
-            text = styledText.toString(),
-            style = TextStyle(
-                fontFamily = FontFamily.Serif,
-                fontSize = 16.sp
-            )
-        )
-    }
-}
-@Composable
-fun HtmlWebViewScreen(htmlContent: String) {
-    val context = LocalContext.current
-    val webView = remember { WebView(context) }
-
-    // Обновляем WebView при изменении HTML-контента
-    LaunchedEffect(htmlContent) {
-        webView.loadDataWithBaseURL(
-            null,
-            htmlContent,
-            "text/html",
-            "UTF-8",
-            null
-        )
-    }
-
-    // Отключаем WebView при выходе с экрана
-    DisposableEffect(context) {
-        onDispose {
-            webView.clearHistory()
-            webView.clearCache(true)
-        }
-    }
-
-    AndroidView(
-        modifier = Modifier.fillMaxSize(),
-        factory = { context ->
-            webView.apply {
-                settings.javaScriptEnabled = true
-                webViewClient = WebViewClient()
-            }
-        }
-    )
-}
-
-
-@Composable
-fun HtmlContentScreen(htmlContent: String) {
-    // Извлекаем изображения из HTML контента
-    val imageUrls = extractImageUrls(htmlContent)
-
-    // Основной контейнер для отображения текста и изображений
-    Column(modifier = Modifier.fillMaxSize()) {
-        // Отображаем HTML текст
-        AndroidView(
-            modifier = Modifier.fillMaxWidth(),
-            factory = { context ->
-                TextView(context).apply {
-                    text = Html.fromHtml(htmlContent, Html.FROM_HTML_MODE_COMPACT)
-                }
-            }
-        )
-
-
-        imageUrls.forEach { imageUrl ->
-            Image(
-                painter = rememberImagePainter(imageUrl),
-                contentDescription = "Image",
-                modifier = Modifier.size(200.dp)
-            )
-        }
-    }
-}
-
-// Функция для извлечения URL изображений из HTML
-fun extractImageUrls(htmlContent: String): List<String> {
-    val imageUrls = mutableListOf<String>()
-    val regex = "<img[^>]*src=[\"']([^\"']*)[\"'][^>]*>".toRegex() // Регулярное выражение для поиска изображений
-    val matches = regex.findAll(htmlContent)
-
-    matches.forEach {
-        imageUrls.add(it.groupValues[1]) // Добавляем найденные URL изображений
-    }
-
-    return imageUrls
-}
