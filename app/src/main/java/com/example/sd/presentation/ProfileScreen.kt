@@ -223,12 +223,14 @@ fun ProfileScreen(navController: NavController, viewModel: AuthViewModel) {
                     ProfileOption(
                         icon = R.drawable.icon_profile_2,
                         label = "Профиль"
-                    )
-                    ProfileOption(icon = R.drawable.ic_settings, label = "Настройки")
-                    ProfileOption(icon = R.drawable.icon_notebook, label = "Контакты")
-                    ProfileOption(icon = R.drawable.icon_book, label = "База знаний")
-                    ProfileOption(icon = R.drawable.ic_history, label = "Пользователи")
-                    ProfileOption(icon = R.drawable.icon_briefcase, label = "Роли")
+                    ){}
+                    ProfileOption(icon = R.drawable.ic_settings, label = "Настройки"){}
+                    ProfileOption(icon = R.drawable.icon_notebook, label = "Контакты"){
+                        navController.navigate("ContactScreen")
+                    }
+                    ProfileOption(icon = R.drawable.icon_book, label = "База знаний"){navController.navigate("KnowledgeBasesScreen")}
+                    ProfileOption(icon = R.drawable.ic_history, label = "Пользователи"){}
+                    ProfileOption(icon = R.drawable.icon_briefcase, label = "Роли"){}
 
 
 
@@ -269,11 +271,11 @@ fun ProfileScreen(navController: NavController, viewModel: AuthViewModel) {
 
 
 @Composable
-fun ProfileOption(icon: Int, label: String) {
+fun ProfileOption(icon: Int, label: String,onclick:()->Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { /* Handle click action */ }
+            .clickable {onclick() }
             .padding(vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

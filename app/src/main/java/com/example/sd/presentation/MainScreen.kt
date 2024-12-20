@@ -37,7 +37,10 @@ import com.example.sd.presentation.accounts.AccountsViewModel
 import com.example.sd.presentation.authorization.AuthViewModel
 import com.example.sd.presentation.authorization.ChangePasswordScreen
 import com.example.sd.presentation.authorization.SuccessChangePassword
+import com.example.sd.presentation.contact.ContactFilterScreen
+import com.example.sd.presentation.contact.ContactScreen
 import com.example.sd.presentation.contact.ContactViewModel
+import com.example.sd.presentation.contact.DetailScreenContact
 import com.example.sd.presentation.createBids.CreateBidCreateBidsScreenСompletion
 import com.example.sd.presentation.createBids.CreateBidsScreen1
 import com.example.sd.presentation.createBids.CreateBidsScreen2
@@ -47,12 +50,16 @@ import com.example.sd.presentation.createBids.CreateBidsScreen5
 import com.example.sd.presentation.createBids.CreateBidsViewModel
 import com.example.sd.presentation.dashboard.DashboardViewModel
 import com.example.sd.presentation.filter.FilterViewModel
+import com.example.sd.presentation.knowledgeBases.KnowledgeBasesDetailScreen
+import com.example.sd.presentation.knowledgeBases.KnowledgeBasesFilterScreen
+import com.example.sd.presentation.knowledgeBases.KnowledgeBasesScreen
+import com.example.sd.presentation.knowledgeBases.KnowledgeBasesViewModel
 
 
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", )
 @Composable
-fun MainScreen(viewModel: AuthViewModel,dashboardViewModel: DashboardViewModel,filterViewModel: FilterViewModel,contactViewModel: ContactViewModel,createBidsViewModel: CreateBidsViewModel,accountsViewModel: AccountsViewModel) {
+fun MainScreen(viewModel: AuthViewModel,dashboardViewModel: DashboardViewModel,filterViewModel: FilterViewModel,contactViewModel: ContactViewModel,createBidsViewModel: CreateBidsViewModel,accountsViewModel: AccountsViewModel,knowledgeBasesViewModel: KnowledgeBasesViewModel) {
     val navController = rememberNavController()
 
 
@@ -68,7 +75,6 @@ fun MainScreen(viewModel: AuthViewModel,dashboardViewModel: DashboardViewModel,f
             }
         }
     ) {paddingValues ->
-        Log.e("paddingValues","paddingValues -> ${paddingValues}")
         Box(modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)) {
@@ -76,10 +82,16 @@ fun MainScreen(viewModel: AuthViewModel,dashboardViewModel: DashboardViewModel,f
                 composable("AnalysisScreen") { AnalysisScreen(navController, dashboardViewModel) }
                 composable("BidsScreen") { BidsScreen(navController, viewModel, filterViewModel) }
                 composable("DetailScreen") { DetailScreen(navController, viewModel) }
+                composable("DetailScreenContact") { DetailScreenContact(navController, contactViewModel) }
                 composable("ReportsScreen") { /* Экран для отчетов */ }
                 composable("ProfileScreen") { ProfileScreen(navController, viewModel) }
                 composable("FilterScreen") { FilterScreen(navController, filterViewModel) }
+                composable("ContactFilterScreen") { ContactFilterScreen(navController, contactViewModel,accountsViewModel) }
                 composable("SuccessChangePassword") { SuccessChangePassword(navController) }
+                composable("KnowledgeBasesScreen") { KnowledgeBasesScreen(navController,knowledgeBasesViewModel) }
+                composable("KnowledgeBasesDetailScreen") { KnowledgeBasesDetailScreen(navController,knowledgeBasesViewModel) }
+                composable("KnowledgeBasesFilterScreen") { KnowledgeBasesFilterScreen(navController,knowledgeBasesViewModel,contactViewModel) }
+                composable("ContactScreen") { ContactScreen(navController,contactViewModel) }
                 composable("ChangePasswordScreen") { ChangePasswordScreen(navController, viewModel)}
                 composable("step1") { CreateBidsScreen1(navController, viewModel = createBidsViewModel,) }
                 composable("step2") {CreateBidsScreen2(navController, viewModel = createBidsViewModel, ) }

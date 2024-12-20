@@ -9,6 +9,7 @@ import com.example.sd.domain.bits.bidOrigins.BidOrigins
 import com.example.sd.domain.bits.bidPriorities.GetBidPriorities
 import com.example.sd.domain.bits.bidStatus.GetBidsStatus
 import com.example.sd.domain.bits.bidStore.BidStore
+import com.example.sd.domain.castas.Castas
 import com.example.sd.domain.changePassword.ChangePassword
 import com.example.sd.domain.contacts.GetContacts
 import com.example.sd.domain.dashboard.Dashboard
@@ -16,6 +17,10 @@ import com.example.sd.domain.entityNumber.EntityNumber
 import com.example.sd.domain.service.serviceItems.ServiceItems
 import com.example.sd.domain.service.servicePacts.ServicePacts
 import com.example.sd.domain.uploadFile.UploadFile
+import com.example.sd.domain.contacts.contactType.ContactType
+import com.example.sd.domain.knowledgeBases.GetKnowledgeBases
+import com.example.sd.domain.knowledgeBases.knowledgeBasesDetail.KnowledgeBasesDetail
+import com.example.sd.domain.knowledgeBases.knowledgeBasesType.KnowledgeBasesType
 import com.example.sd.utils.Values
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -101,6 +106,12 @@ interface ApplicationApi {
     suspend fun getBidCategories(
         @Header("Authorization") token: String,
     ): GetBidCategories
+    @GET("knowledgeBases/search")
+    suspend fun getKnowledgeBases(
+        @Header("Authorization") token: String,
+        @QueryMap(encoded = true) filters: Map<String, String>
+
+    ): GetKnowledgeBases
 
     @GET("bidOrigins")
     suspend fun getBidOrigins(
@@ -182,4 +193,25 @@ interface ApplicationApi {
         @Header("Authorization") token: String,
         @Field("entity_type") entityType: String
     ): EntityNumber
+
+    @GET("contactTypes")
+    suspend fun getContactTypes(
+        @Header("Authorization") token: String,
+    ): ContactType
+    @GET("knowledgeBaseTypes")
+    suspend fun getKnowledgeBaseTypes(
+        @Header("Authorization") token: String,
+    ): KnowledgeBasesType
+
+    @GET("castas")
+    suspend fun getCastas(
+        @Header("Authorization") token: String,
+    ): Castas
+
+
+    @GET("knowledgeBases/{knowledgeBaseId}")
+    suspend fun getKnowledgeBasesDetail(
+        @Header("Authorization") token: String,
+        @Path("knowledgeBaseId") knowledgeBaseId: String
+    ): KnowledgeBasesDetail
 }

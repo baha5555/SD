@@ -11,6 +11,7 @@ import com.example.sd.data.preference.CustomPreference
 import com.example.sd.data.remote.ApplicationApi
 import com.example.sd.domain.bits.Data
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import javax.inject.Inject
 
 class FilteredBidsUseCase @Inject constructor(
@@ -21,7 +22,13 @@ class FilteredBidsUseCase @Inject constructor(
         return Pager(
             PagingConfig(pageSize = 10),
             pagingSourceFactory = { FilteredBidsPager(applicationApi, prefs, filters) }
-        ).flow
+        ).flow.catch { e ->
+            emit(
+                PagingData.empty<Data>() // Возвращаем пустой список данных
+            )
+            // Логируем ошибку
+            Log.e("KnowledgeBasesUseCase", "Ошибка при загрузке данных: ${e.message}", e)
+        }
     }
 }
 
@@ -39,7 +46,7 @@ class FilteredBidsPager(
             val response = applicationApi.getFilteredData(accessToken, filters)
 
             val prevKey = if (pageNumber > 1) pageNumber - 1 else null
-            val nextKey = if (response.data.isNotEmpty()) pageNumber + 1 else null
+            val nextKey = if (response.data.isNullOrEmpty()) null else pageNumber + 1
 
             LoadResult.Page(
                 data = response.data,
@@ -47,7 +54,7 @@ class FilteredBidsPager(
                 nextKey = nextKey
             )
         } catch (e: Exception) {
-            Log.e("FilteredBidsPager", "Ошибка при загрузке данных: ${e.message}")
+            Log.d("FilteredBidsPager", "Ошибка при загрузке данных: ${e.message}")
             LoadState.Error(e)  // Возвращаем ошибку в PagingSource
             throw Exception("Ошибка при загрузке данных: ${e.message}")
         }

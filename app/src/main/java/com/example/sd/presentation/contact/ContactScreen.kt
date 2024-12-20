@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
@@ -32,8 +33,11 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,6 +47,8 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -60,39 +66,63 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.flow.Flow
 
 
-@OptIn(ExperimentalLayoutApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun ContactScreen(
     navController: NavController,
     viewModel: ContactViewModel,
-    filterViewModel: FilterViewModel
 ) {
     // Создаем переменные для данных
-    val pagingData: Flow<PagingData<com.example.sd.domain.contacts.Data>> = viewModel.searchContact()
+    val pagingData: Flow<PagingData<com.example.sd.domain.contacts.Data>> = viewModel.searchContactFilter()
+
 
     val lazyPagingItems = pagingData.collectAsLazyPagingItems()
-    Log.i("Loading2222222","lazyPagingItems: ${lazyPagingItems}")
-    Log.i("Loading2222222","lazyPagingItemspaging: ${viewModel.searchContact().collectAsLazyPagingItems()}")
+    LaunchedEffect(viewModel.selectedFilters) {
+        lazyPagingItems.refresh()
+    }
+
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                elevation = 0.dp,
-                modifier = Modifier.fillMaxHeight(if(filterViewModel.selectedFilters.isNotEmpty()) 0.23f else 0.18f),
-                backgroundColor = Color.White,
-                contentColor = Color.Black,
-                title = {
-                    Column {
-                        Text(
-                            text = "Обращения",
-                            fontSize = 32.sp,
-                            color = Color.Black, fontWeight = FontWeight.Bold
-                        )
+
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth().fillMaxHeight(if (viewModel.selectedFilters.isNotEmpty()) 0.23f else 0.18f).padding(horizontal = 1.dp)
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth(1f)
+                                .background(Color.White)
+                        ) {
+                            IconButton(modifier = Modifier, onClick = {
+                                navController.popBackStack()
+                            }) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.icon_left),
+                                    contentDescription = "",
+                                )
+                            }
+                            Text(
+                                text = "Контакты",
+                                style = TextStyle(
+                                    fontSize = 18.sp,
+                                    lineHeight = 18.sp,
+                                    fontFamily = FontFamily(Font(R.font.inter)),
+                                    fontWeight = FontWeight(400),
+                                    color = Color(0xFF2C2D2E),
+                                    textAlign = TextAlign.Center,
+                                )
+                            )
+
+                            Box(modifier = Modifier.size(50.dp))
+                        }
 
                         Row(
                             modifier = Modifier
                                 .padding(top = 20.dp)
+                                .padding(horizontal = 16.dp)
                                 .fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -134,9 +164,9 @@ fun ContactScreen(
                             )
                             Box(
                                 modifier = Modifier
-                                    .height(53.dp)
-                                    .width(80.dp)
-                                    .padding(start = 20.dp)
+                                    .height(50.dp)
+                                    .width(95.dp)
+                                    .padding(start = 35.dp)
                                     .border(
                                         width = 1.dp,
                                         shape = RoundedCornerShape(12.dp),
@@ -144,7 +174,7 @@ fun ContactScreen(
                                     ),
                                 contentAlignment = Alignment.Center
                             ) {
-                                IconButton(onClick = { navController.navigate("FilterScreen") }) {
+                                IconButton(onClick = { navController.navigate("ContactFilterScreen") }) {
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_filter),
                                         contentDescription = "Фильтр",
@@ -156,28 +186,28 @@ fun ContactScreen(
                         }
                         Column(
                             modifier = Modifier
-                                .fillMaxSize()
+                                .fillMaxSize().padding(horizontal = 16.dp)
                                 .fillMaxHeight(), verticalArrangement = Arrangement.Center
                         ) {
 
-                          Row(
+                            Row(
                                 modifier = Modifier
                                     .horizontalScroll(rememberScrollState())
                                     .fillMaxWidth()
                                     .height(50.dp)
                                     .padding(vertical = 6.dp),
                                 horizontalArrangement = Arrangement.spacedBy(6.dp),
-                               verticalAlignment = Alignment.CenterVertically
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                filterViewModel.selectedFilters.forEach { filter ->
-                                    FilterChip(filter) { filterViewModel.removeFilter(filter) }
+                                viewModel.selectedFilters.distinct().forEach { filter ->
+                                    FilterChip(filter) { viewModel.removeFilter(filter) }
                                 }
                             }
                         }
                     }
 
 
-                })
+
         },
         content = {
 
@@ -200,7 +230,7 @@ fun ContactScreen(
                         item?.let {
                             ExpandableTicketCard(ticket = it) {
                                 viewModel.updateSelectedContact(it)
-                                navController.navigate("DetailScreen")
+                                navController.navigate("DetailScreenContact")
                             }
                         }
                     }
@@ -248,7 +278,7 @@ fun ExpandableTicketCard(ticket: com.example.sd.domain.contacts.Data, onClick: (
     ) {
         Column(Modifier.padding(16.dp)) {
             Text(
-                text = ticket.created_at.toString(),
+                text = ticket.contact_type_id?.name.toString(),
                 style = TextStyle(
                     fontSize = 14.sp,
                     lineHeight = 18.sp,
@@ -273,18 +303,22 @@ fun ExpandableTicketCard(ticket: com.example.sd.domain.contacts.Data, onClick: (
             Spacer(Modifier.height(12.dp))
 
 
-          /*  FlowRow(
+           FlowRow(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Element(label = ticket.mobile_phone.toString())
-                Element2(label = ticket.bid_status_id?.name.toString())
-                Element3(label = ticket.bid_category_id?.name.toString())
-                Element4(label = ticket.support_level_id?.name.toString())
-            }*/
+               if(ticket.mobile_phone!=null){Element(label = ticket.mobile_phone)}
+               if(ticket.casta_id!=null){Element2(label = ticket.casta_id.name.toString())}
+               if(ticket.branch_id!=null){Element3(label = ticket.branch_id.name.toString())}
+               if(ticket.department_id!=null){Element4(label = ticket.department_id.name.toString())}
+
+
+
+
+            }
 
         }
     }
@@ -301,7 +335,7 @@ fun Element(label: String) {
             .padding(8.dp)
     ) {
         Text(
-            text = label, style = TextStyle(
+            text = label,maxLines = 1,overflow = TextOverflow.Ellipsis, style = TextStyle(
                 fontSize = 12.sp,
                 lineHeight = 18.sp,
                 fontFamily = FontFamily(Font(R.font.inter)),
@@ -325,8 +359,9 @@ fun Element2(label: String) {
             .padding(8.dp)
     ) {
         Text(
-            text = label, style = TextStyle(
+            text = label,maxLines = 1,overflow = TextOverflow.Ellipsis, style = TextStyle(
                 fontSize = 12.sp,
+
                 lineHeight = 18.sp,
                 fontFamily = FontFamily(Font(R.font.inter)),
                 fontWeight = FontWeight.SemiBold,
@@ -350,9 +385,10 @@ fun Element3(label: String) {
             .padding(8.dp)
     ) {
         Text(
-            text = label, style = TextStyle(
+            text = label,maxLines = 1,overflow = TextOverflow.Ellipsis, style = TextStyle(
                 fontSize = 12.sp,
                 lineHeight = 18.sp,
+
                 fontFamily = FontFamily(Font(R.font.inter)),
                 fontWeight = FontWeight.SemiBold,
                 color = Color(0xFF2C2D2E),
@@ -374,7 +410,7 @@ fun Element4(label: String) {
             .padding(8.dp)
     ) {
         Text(
-            text = label, style = TextStyle(
+            text = label,maxLines = 1,overflow = TextOverflow.Ellipsis, style = TextStyle(
                 fontSize = 12.sp,
                 lineHeight = 18.sp,
                 fontFamily = FontFamily(Font(R.font.inter)),

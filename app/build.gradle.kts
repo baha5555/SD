@@ -73,10 +73,11 @@ dependencies {
     implementation(libs.hilt.navigation.compose)
     implementation(libs.swiperefresh)
     implementation(libs.runtime)
+    implementation(libs.compose.webview)
 
     implementation(libs.androidx.paging)
+    implementation(libs.androidx.appcompat)
     kapt (libs.hilt.compiler)
-
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

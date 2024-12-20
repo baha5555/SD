@@ -10,6 +10,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
@@ -28,9 +29,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FilterViewModel @Inject constructor(
-    application: Application,
+
     private val filteredBidsUseCase: FilteredBidsUseCase
-) : AndroidViewModel(application) {
+) : ViewModel() {
 
     var selectedDateTime by mutableStateOf("ДД.ММ.ГГ 00:00")
     var selectedPlanDateTime by mutableStateOf("ДД.ММ.ГГ 00:00")
@@ -117,7 +118,7 @@ class FilterViewModel @Inject constructor(
         return filters
     }
 
-    // Запрос данных с фильтрами и пагинацией
+    
     fun fetchFilteredBids(): Flow<PagingData<com.example.sd.domain.bits.Data>> {
         return try {
             // Получаем карту фильтров

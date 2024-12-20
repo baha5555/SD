@@ -39,7 +39,7 @@ fun SplashScreen(navController: NavController) {
     val preferences = CustomPreference(LocalContext.current)
 val context = LocalContext.current
 
-    Log.e("accsesstoken", "${viewModel.stateAuth.value.response}")
+    Log.d("accsesstoken", "${viewModel.stateAuth.value.response}")
     LaunchedEffect(Unit) {
         delay(1000)
         showSecondScreen = true

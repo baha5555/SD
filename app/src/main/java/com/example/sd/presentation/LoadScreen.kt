@@ -35,8 +35,10 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.sd.R
 import com.example.sd.presentation.authorization.AuthViewModel
+import com.example.sd.presentation.contact.ContactViewModel
 import com.example.sd.presentation.createBids.CreateBidsViewModel
 import com.example.sd.presentation.dashboard.DashboardViewModel
+import com.example.sd.presentation.knowledgeBases.KnowledgeBasesViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -50,7 +52,9 @@ fun LoadingScreen(
     dashboardViewModel: DashboardViewModel,
     viewModel: AuthViewModel,
     createBidsViewModel: CreateBidsViewModel,
-    navController: NavController
+    navController: NavController,
+    contactViewModel: ContactViewModel,
+    knowledgeBasesViewModel: KnowledgeBasesViewModel
 ) {
 
     val dashboardState by dashboardViewModel.stateDashboard
@@ -65,6 +69,7 @@ fun LoadingScreen(
     var isLoading by remember { mutableStateOf(true) }
 
     LaunchedEffect(key1 = true) {
+        //bids
         dashboardViewModel.getDashboard()
         viewModel.getAboutMe()
         createBidsViewModel.getBidCategories()
@@ -72,6 +77,12 @@ fun LoadingScreen(
         createBidsViewModel.getBidPriorities()
         createBidsViewModel.getSupportLevels()
         createBidsViewModel.getBidsOrigins()
+        //contact
+        contactViewModel.getContactType()
+        //castas
+        contactViewModel.getCastas()
+        //KnowledgeBases
+        knowledgeBasesViewModel.getKnowledgeBasesType()
 
 
         // Ждем 2 секунды, даже если данные уже загрузились

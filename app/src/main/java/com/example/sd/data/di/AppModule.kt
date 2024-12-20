@@ -13,6 +13,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 
@@ -27,12 +28,14 @@ object AppModule{
             .Builder()
             .baseUrl(Constants.URL)
             .addConverterFactory(GsonConverterFactory.create())
+
             .client(
                 OkHttpClient.Builder().addInterceptor(
-                    HttpLoggingInterceptor().setLevel(
-                        HttpLoggingInterceptor.Level.BODY
-                    )
-                ).build()
+                    HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+
+                ).connectTimeout(30, TimeUnit.SECONDS) // Увеличиваем таймаут
+                    .readTimeout(30, TimeUnit.SECONDS)
+                    .writeTimeout(30, TimeUnit.SECONDS).build()
             )
             .build()
             .create(ApplicationApi::class.java)

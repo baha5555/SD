@@ -10,12 +10,17 @@ import com.example.sd.domain.bits.bidOrigins.BidOrigins
 import com.example.sd.domain.bits.bidPriorities.GetBidPriorities
 import com.example.sd.domain.bits.bidStatus.GetBidsStatus
 import com.example.sd.domain.bits.bidStore.BidStore
+import com.example.sd.domain.castas.Castas
 import com.example.sd.domain.changePassword.ChangePassword
 import com.example.sd.domain.contacts.GetContacts
 import com.example.sd.domain.dashboard.Dashboard
 import com.example.sd.domain.entityNumber.EntityNumber
 import com.example.sd.domain.service.serviceItems.ServiceItems
 import com.example.sd.domain.service.servicePacts.ServicePacts
+import com.example.sd.domain.contacts.contactType.ContactType
+import com.example.sd.domain.knowledgeBases.GetKnowledgeBases
+import com.example.sd.domain.knowledgeBases.knowledgeBasesDetail.KnowledgeBasesDetail
+import com.example.sd.domain.knowledgeBases.knowledgeBasesType.KnowledgeBasesType
 
 
 interface AppRepository {
@@ -74,5 +79,11 @@ interface AppRepository {
     ): BidStore
 
     suspend fun generateEntityNumber(entityType: String): EntityNumber
+
+    suspend fun getContactTypes(): ContactType
+    suspend fun getKnowledgeBaseTypes(): KnowledgeBasesType
+    suspend fun getKnowledgeBases(filters: Map<String, String>): GetKnowledgeBases
+    suspend fun getKnowledgeBasesDetail(knowledgeBaseId: String): KnowledgeBasesDetail
+    suspend fun getCastas(): Castas
 }
 
