@@ -58,62 +58,12 @@ import kotlinx.coroutines.launch
 fun DetailScreenContact(navController: NavController, viewModel: ContactViewModel) {
 
     val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
-    val coroutineScope = rememberCoroutineScope()
 
-    val color = when (viewModel.selectedContact.value.contact_type_id?.name) {
-        "Новое" -> Color(0xFFFF7B00)
-        "Ожидает обработки" -> Color(0xFF004FC7)
-        "Ожидает назначения ответственного" -> Color(0xFFD09E00)
-        "Отклонено по SLA" -> Color(0xFFBF00FF)
-        "Закрыто" -> Color(0xFF696E82)
-        "Отменено" -> Color(0xFFEA3C4A)
-        "Разрешено" -> Color(0xFF16A34A)
-        "В работе" -> Color(0xFF03C3B3)
-        "Ожидает реакцию пользователя" -> Color(0xFF549CF0)
-        else -> {
-            Color.Black
-        }
-    }
+
 
     ModalBottomSheetLayout(
         sheetContent = {
-            Column(
-                modifier = Modifier.padding(
-                    vertical = 16.dp,
-                    horizontal = 24.dp
-                )
-            ) {
-                ActionItem(
-                    icon = R.drawable.ic_registration,
-                    label = "Регистрационная информация"
-                )
-                ActionItem(icon = R.drawable.ic_solution, label = "Решение")
-                ActionItem(
-                    icon = R.drawable.ic_feedback,
-                    label = "Закрытие и обратная связь"
-                )
-                ActionItem(icon = R.drawable.ic_files, label = "Файлы")
-                ActionItem(icon = R.drawable.ic_feed, label = "Лента")
-                ActionItem(icon = R.drawable.ic_time_track, label = "Тайм трек")
-                ActionItem(
-                    icon = R.drawable.ic_history,
-                    label = "История изменений"
-                )
-                Divider(modifier = Modifier.padding(vertical = 8.dp))
-                Text(
-                    text = "Закрыть окно",
-                    color = Color(0xFF696E82),
-                    fontSize = 14.sp,
-                    modifier = Modifier
-                        .clickable {
-                            coroutineScope.launch {
-                                sheetState.hide()
-                            }
-                        }
-                        .padding(vertical = 8.dp)
-                        .align(Alignment.CenterHorizontally)
-                )
-            } // Ваша функция с содержимым диалога
+
         },
         sheetState = sheetState,
         scrimColor = Color.Transparent // Убирает затемнение фона
@@ -145,7 +95,7 @@ fun DetailScreenContact(navController: NavController, viewModel: ContactViewMode
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold
                         )
-                        IconButton(onClick = { /* действие для иконки копирования */ }) {
+                        IconButton(onClick = {  }) {
                             Icon(
                                 painter = painterResource(id = R.drawable.icon_copy),
                                 contentDescription = "Copy"
@@ -212,56 +162,10 @@ fun DetailScreenContact(navController: NavController, viewModel: ContactViewMode
 
                         }
                     }
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        OutlinedButton(
-                            onClick = {
-                                coroutineScope.launch {
-                                    if (sheetState.isVisible) {
-                                        sheetState.hide()
-                                    } else {
-                                        sheetState.show()
-                                    }
-                                }
-                            },
-                            shape = RoundedCornerShape(12.dp),
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(60.dp)
-                        ) {
-                            Text("Действия", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                        }
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Button(
-                            onClick = { /* действие для кнопки "Изменить" */ },
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(60.dp),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF004FC7))
-                        ) {
-                            Text(
-                                "Изменить",
-                                color = Color.White,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
                 }
-
-
             },
-
-
-            )
+        )
     }
-
 }
 
 @Composable
@@ -282,29 +186,4 @@ fun InfoItem(label: String, value: String, valueColor: Color = Color.Black) {
     }
 }
 
-
-@Composable
-fun ActionItem(icon: Int, label: String) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 12.dp)
-            .clickable { /* Handle item click */ },
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            painter = painterResource(id = icon),
-            contentDescription = label,
-            tint = Color.Black,
-            modifier = Modifier.size(24.dp)
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        Text(
-            text = label,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Medium,
-            color = Color.Black
-        )
-    }
-}
 

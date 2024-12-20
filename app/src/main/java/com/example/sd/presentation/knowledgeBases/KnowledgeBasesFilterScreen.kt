@@ -74,12 +74,9 @@ fun KnowledgeBasesFilterScreen(
 ) {
 
     val expandedState = remember { mutableStateOf<String?>(null) }
-
-
     val contactList = remember { mutableStateOf<List<String>>(emptyList()) }
 
     var job: Job? = null
-
     val lazyPagingItems =
         contactViewModel.searchContact1(viewModel.selectedCreate).collectAsLazyPagingItems()
 
@@ -250,6 +247,7 @@ fun KnowledgeBasesFilterScreen(
 
                         TagInputField(
                             label = "Тег",
+                            placeholder = "Введите тег",
                             value = viewModel.selectedTeg,
                             onValueChange = { srm ->
                                 viewModel.selectedTeg = srm
@@ -438,6 +436,7 @@ fun SimpleDateRangePickerField(
 fun TagInputField(
     label: String,
     value: String,
+    placeholder: String,
     onValueChange: (String) -> Unit
 ) {
     Column(
@@ -467,7 +466,7 @@ fun TagInputField(
                 .height(56.dp),
             placeholder = {
                 Text(
-                    text = "Введите тег",
+                    text = placeholder,
                     color = Color(0xFFAFBCCB),
                     fontSize = 16.sp
                 )

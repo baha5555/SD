@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
@@ -36,6 +37,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -64,56 +66,63 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.flow.Flow
 
 
-@OptIn(ExperimentalLayoutApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun ContactScreen(
     navController: NavController,
     viewModel: ContactViewModel,
-    filterViewModel: FilterViewModel
 ) {
     // Создаем переменные для данных
-    val pagingData: Flow<PagingData<com.example.sd.domain.contacts.Data>> = viewModel.searchContact()
+    val pagingData: Flow<PagingData<com.example.sd.domain.contacts.Data>> = viewModel.searchContactFilter()
+
 
     val lazyPagingItems = pagingData.collectAsLazyPagingItems()
-    Log.i("Loading2222222","lazyPagingItems: ${lazyPagingItems}")
+    LaunchedEffect(viewModel.selectedFilters) {
+        lazyPagingItems.refresh()
+    }
+
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                elevation = 0.dp,
-                modifier = Modifier.fillMaxHeight(if(filterViewModel.selectedFilters.isNotEmpty()) 0.23f else 0.18f),
-                backgroundColor = Color.White,
-                contentColor = Color.Black,
-                title = {
-                    Column {
+
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth().fillMaxHeight(if (viewModel.selectedFilters.isNotEmpty()) 0.23f else 0.18f).padding(horizontal = 1.dp)
+                    ) {
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 8.dp)
-                                .padding(top = 4.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth(1f)
+                                .background(Color.White)
                         ) {
-                            IconButton(onClick = { navController.popBackStack() }) {
+                            IconButton(modifier = Modifier, onClick = {
+                                navController.popBackStack()
+                            }) {
                                 Icon(
-                                    imageVector = Icons.Default.ArrowBack,
-                                    contentDescription = "Back"
+                                    painter = painterResource(id = R.drawable.icon_left),
+                                    contentDescription = "",
                                 )
                             }
                             Text(
                                 text = "Контакты",
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold
+                                style = TextStyle(
+                                    fontSize = 18.sp,
+                                    lineHeight = 18.sp,
+                                    fontFamily = FontFamily(Font(R.font.inter)),
+                                    fontWeight = FontWeight(400),
+                                    color = Color(0xFF2C2D2E),
+                                    textAlign = TextAlign.Center,
+                                )
                             )
-                            IconButton(onClick = { /* действие для иконки копирования */ }) {
 
-                            }
+                            Box(modifier = Modifier.size(50.dp))
                         }
 
                         Row(
                             modifier = Modifier
                                 .padding(top = 20.dp)
+                                .padding(horizontal = 16.dp)
                                 .fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -156,8 +165,8 @@ fun ContactScreen(
                             Box(
                                 modifier = Modifier
                                     .height(50.dp)
-                                    .width(80.dp)
-                                    .padding(start = 20.dp)
+                                    .width(95.dp)
+                                    .padding(start = 35.dp)
                                     .border(
                                         width = 1.dp,
                                         shape = RoundedCornerShape(12.dp),
@@ -177,28 +186,28 @@ fun ContactScreen(
                         }
                         Column(
                             modifier = Modifier
-                                .fillMaxSize()
+                                .fillMaxSize().padding(horizontal = 16.dp)
                                 .fillMaxHeight(), verticalArrangement = Arrangement.Center
                         ) {
 
-                          Row(
+                            Row(
                                 modifier = Modifier
                                     .horizontalScroll(rememberScrollState())
                                     .fillMaxWidth()
                                     .height(50.dp)
                                     .padding(vertical = 6.dp),
                                 horizontalArrangement = Arrangement.spacedBy(6.dp),
-                               verticalAlignment = Alignment.CenterVertically
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                             /* viewModel.selectedFilters.forEach { filter ->
+                                viewModel.selectedFilters.distinct().forEach { filter ->
                                     FilterChip(filter) { viewModel.removeFilter(filter) }
-                                }*/
+                                }
                             }
                         }
                     }
 
 
-                })
+
         },
         content = {
 

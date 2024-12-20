@@ -37,6 +37,7 @@ import com.example.sd.presentation.accounts.AccountsViewModel
 import com.example.sd.presentation.authorization.AuthViewModel
 import com.example.sd.presentation.authorization.ChangePasswordScreen
 import com.example.sd.presentation.authorization.SuccessChangePassword
+import com.example.sd.presentation.contact.ContactFilterScreen
 import com.example.sd.presentation.contact.ContactScreen
 import com.example.sd.presentation.contact.ContactViewModel
 import com.example.sd.presentation.contact.DetailScreenContact
@@ -85,11 +86,12 @@ fun MainScreen(viewModel: AuthViewModel,dashboardViewModel: DashboardViewModel,f
                 composable("ReportsScreen") { /* Экран для отчетов */ }
                 composable("ProfileScreen") { ProfileScreen(navController, viewModel) }
                 composable("FilterScreen") { FilterScreen(navController, filterViewModel) }
+                composable("ContactFilterScreen") { ContactFilterScreen(navController, contactViewModel,accountsViewModel) }
                 composable("SuccessChangePassword") { SuccessChangePassword(navController) }
                 composable("KnowledgeBasesScreen") { KnowledgeBasesScreen(navController,knowledgeBasesViewModel) }
                 composable("KnowledgeBasesDetailScreen") { KnowledgeBasesDetailScreen(navController,knowledgeBasesViewModel) }
                 composable("KnowledgeBasesFilterScreen") { KnowledgeBasesFilterScreen(navController,knowledgeBasesViewModel,contactViewModel) }
-                composable("ContactScreen") { ContactScreen(navController,contactViewModel,filterViewModel) }
+                composable("ContactScreen") { ContactScreen(navController,contactViewModel) }
                 composable("ChangePasswordScreen") { ChangePasswordScreen(navController, viewModel)}
                 composable("step1") { CreateBidsScreen1(navController, viewModel = createBidsViewModel,) }
                 composable("step2") {CreateBidsScreen2(navController, viewModel = createBidsViewModel, ) }

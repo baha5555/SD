@@ -258,11 +258,7 @@ fun DetailScreen(navController: NavController, viewModel: AuthViewModel) {
                         }
                     }
                 }
-
-
             },
-
-
             )
     }
 

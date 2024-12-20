@@ -22,7 +22,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -42,12 +44,26 @@ class AccountsViewModel @Inject constructor(
         return filterMap
     }
 
+
+
+
     fun searchAccounts(): Flow<PagingData<Data>> {
         return snapshotFlow { getFilterMap() }
             .debounce(300)
             .flatMapLatest { query ->
                 val filters = getFilterMap()
                 accountsUseCase(filters).cachedIn(viewModelScope)
+            }
+            .catch { e ->
+                Log.e("ContactViewModel", "Ошибка загрузки: ${e.message}")
+            }
+    }
+    fun searchAccountsName(name: String): Flow<PagingData<Data>>  {
+        return flowOf(name)
+            .debounce(300)
+            .distinctUntilChanged()
+            .flatMapLatest { query ->
+                accountsUseCase(mapOf("filter[name]" to query)).cachedIn(viewModelScope)
             }
             .catch { e ->
                 Log.e("ContactViewModel", "Ошибка загрузки: ${e.message}")

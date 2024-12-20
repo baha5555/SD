@@ -79,6 +79,8 @@ fun LoadingScreen(
         createBidsViewModel.getBidsOrigins()
         //contact
         contactViewModel.getContactType()
+        //castas
+        contactViewModel.getCastas()
         //KnowledgeBases
         knowledgeBasesViewModel.getKnowledgeBasesType()
 

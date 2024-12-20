@@ -9,6 +9,7 @@ import com.example.sd.domain.bits.bidOrigins.BidOrigins
 import com.example.sd.domain.bits.bidPriorities.GetBidPriorities
 import com.example.sd.domain.bits.bidStatus.GetBidsStatus
 import com.example.sd.domain.bits.bidStore.BidStore
+import com.example.sd.domain.castas.Castas
 import com.example.sd.domain.changePassword.ChangePassword
 import com.example.sd.domain.contacts.GetContacts
 import com.example.sd.domain.dashboard.Dashboard
@@ -201,6 +202,11 @@ interface ApplicationApi {
     suspend fun getKnowledgeBaseTypes(
         @Header("Authorization") token: String,
     ): KnowledgeBasesType
+
+    @GET("castas")
+    suspend fun getCastas(
+        @Header("Authorization") token: String,
+    ): Castas
 
 
     @GET("knowledgeBases/{knowledgeBaseId}")

@@ -76,7 +76,6 @@ fun KnowledgeBasesScreen(
     val pagingData: Flow<PagingData<com.example.sd.domain.knowledgeBases.Data>> =
         knowledgeBasesViewModel.filterKnowledgeBases()
 
-    val searchText = remember { mutableStateOf("") }
 
 
     val lazyPagingItems = pagingData.collectAsLazyPagingItems()
@@ -86,19 +85,13 @@ fun KnowledgeBasesScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                elevation = 0.dp,
-                modifier = Modifier.fillMaxHeight(if (knowledgeBasesViewModel.selectedFilters.isNotEmpty()) 0.23f else 0.18f),
-                backgroundColor = Color.White,
-                contentColor = Color.Black,
-                title = {
-                    Column {
+
+                    Column(verticalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth().fillMaxHeight(if (knowledgeBasesViewModel.selectedFilters.isNotEmpty()) 0.23f else 0.18f).padding(horizontal = 1.dp)) {
                         Row(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(end = 10.dp)
                                 .background(Color.White)
                         ) {
                             IconButton(onClick = {
@@ -127,6 +120,7 @@ fun KnowledgeBasesScreen(
                         Row(
                             modifier = Modifier
                                 .padding(top = 20.dp)
+                                .padding(horizontal = 16.dp)
                                 .fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -186,8 +180,8 @@ fun KnowledgeBasesScreen(
                             Box(
                                 modifier = Modifier
                                     .height(53.dp)
-                                    .width(90.dp)
-                                    .padding(start = 30.dp)
+                                    .width(95.dp)
+                                    .padding(start = 35.dp)
                                     .border(
                                         width = 1.dp,
                                         shape = RoundedCornerShape(12.dp),
@@ -207,7 +201,7 @@ fun KnowledgeBasesScreen(
                         }
                         Column(
                             modifier = Modifier
-                                .fillMaxSize()
+                                .fillMaxSize().padding(horizontal =16.dp)
                                 .fillMaxHeight(), verticalArrangement = Arrangement.Center
                         ) {
 
@@ -220,13 +214,13 @@ fun KnowledgeBasesScreen(
                                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    knowledgeBasesViewModel.selectedFilters.forEach { filter ->
+                                    knowledgeBasesViewModel.selectedFilters.distinct().forEach { filter ->
                                     FilterChip(filter) { knowledgeBasesViewModel.removeFilter(filter) }
                                 }
                             }
                         }
                     }
-                })
+
         },
         content = {
 
@@ -257,8 +251,6 @@ fun KnowledgeBasesScreen(
                                         } else {
                                         }
                                     }
-                                    knowledgeBasesViewModel.updateSelectedOrder(it)
-                                    // navController.navigate("KnowledgeBasesDetailScreen")
                                 }
                             }
                         }

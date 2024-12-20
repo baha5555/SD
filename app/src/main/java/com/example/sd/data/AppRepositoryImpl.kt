@@ -13,6 +13,7 @@ import com.example.sd.domain.bits.bidOrigins.BidOrigins
 import com.example.sd.domain.bits.bidPriorities.GetBidPriorities
 import com.example.sd.domain.bits.bidStatus.GetBidsStatus
 import com.example.sd.domain.bits.bidStore.BidStore
+import com.example.sd.domain.castas.Castas
 import com.example.sd.domain.changePassword.ChangePassword
 import com.example.sd.domain.contacts.GetContacts
 import com.example.sd.domain.dashboard.Dashboard
@@ -139,4 +140,6 @@ class AppRepositoryImpl(
     override suspend fun getKnowledgeBaseTypes(): KnowledgeBasesType = api.getKnowledgeBaseTypes(prefs.getAccessToken())
 
     override suspend fun getKnowledgeBases(filters: Map<String, String>): GetKnowledgeBases  = api.getKnowledgeBases(prefs.getAccessToken(),filters)
-    override suspend fun getKnowledgeBasesDetail(knowledgeBaseId: String): KnowledgeBasesDetail  = api.getKnowledgeBasesDetail(prefs.getAccessToken(),knowledgeBaseId)}
+    override suspend fun getKnowledgeBasesDetail(knowledgeBaseId: String): KnowledgeBasesDetail  = api.getKnowledgeBasesDetail(prefs.getAccessToken(),knowledgeBaseId)
+    override suspend fun getCastas(): Castas  = api.getCastas(prefs.getAccessToken())
+}

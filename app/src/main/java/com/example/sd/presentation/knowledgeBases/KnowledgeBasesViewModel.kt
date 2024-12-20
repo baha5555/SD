@@ -31,28 +31,12 @@ import javax.inject.Inject
 class KnowledgeBasesViewModel @Inject constructor(
     private val knowledgeBasesUseCase: KnowledgeBasesUseCase,
     private val getKnowledgeBaseTypesUseCase: KnowledgeBaseTypesUseCase,
-    private val contactsUseCase: GetContactsUseCase,
     private val getKnowledgeBasesDetailUseCase : GetKnowledgeBasesDetailUseCase
 ) : ViewModel() {
-
-    var selectedCreate1 by mutableStateOf("")
-
-    // Функция для поиска
-    fun searchContactName(name: String): Flow<PagingData<com.example.sd.domain.contacts.Data>> {
-        return contactsUseCase(mapOf("filter[name]" to name)) // Здесь мы передаем фильтр в UseCase
-            .cachedIn(viewModelScope)
-    }
-
-    fun addFilter1(selectedName: String) {
-        selectedCreate = selectedName // Обновляем фильтр
-    }
-
 
     private val _stateGetKnowledgeBasesDetail = mutableStateOf(KnowledgeBasesDetailResponseState())
     val stateGetKnowledgeBasesDetail: State<KnowledgeBasesDetailResponseState> = _stateGetKnowledgeBasesDetail
 
-    private val _selectedOrder = mutableStateOf(com.example.sd.domain.knowledgeBases.Data())
-    val selectedOrder: State<com.example.sd.domain.knowledgeBases.Data> get() = _selectedOrder
 
     private val _stateGetKnowledgeBasesType = mutableStateOf(KnowledgeBasesTypeResponseState())
     val stateGetKnowledgeBasesType: State<KnowledgeBasesTypeResponseState> = _stateGetKnowledgeBasesType
@@ -68,7 +52,6 @@ class KnowledgeBasesViewModel @Inject constructor(
     var selectedName by mutableStateOf("")
 
 
-    private val _selectedFilters1 = mutableStateListOf<String>()
     private val _selectedFilters = mutableStateListOf<String>()
     val selectedFilters: List<String> get() = _selectedFilters
 
@@ -239,11 +222,7 @@ class KnowledgeBasesViewModel @Inject constructor(
     }
 
 
-    fun updateSelectedOrder(order: com.example.sd.domain.knowledgeBases.Data) {
 
-        _selectedOrder.value = order
-
-    }
 
     fun itemTypeKnowledge(): List<String> {
         val knowledgeBasesType = _stateGetKnowledgeBasesType.value.response
