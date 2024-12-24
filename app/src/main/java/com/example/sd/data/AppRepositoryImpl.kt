@@ -24,6 +24,7 @@ import com.example.sd.domain.contacts.contactType.ContactType
 import com.example.sd.domain.knowledgeBases.GetKnowledgeBases
 import com.example.sd.domain.knowledgeBases.knowledgeBasesDetail.KnowledgeBasesDetail
 import com.example.sd.domain.knowledgeBases.knowledgeBasesType.KnowledgeBasesType
+import com.example.sd.domain.report.detailReport.DetailReport
 
 
 class AppRepositoryImpl(
@@ -142,4 +143,9 @@ class AppRepositoryImpl(
     override suspend fun getKnowledgeBases(filters: Map<String, String>): GetKnowledgeBases  = api.getKnowledgeBases(prefs.getAccessToken(),filters)
     override suspend fun getKnowledgeBasesDetail(knowledgeBaseId: String): KnowledgeBasesDetail  = api.getKnowledgeBasesDetail(prefs.getAccessToken(),knowledgeBaseId)
     override suspend fun getCastas(): Castas  = api.getCastas(prefs.getAccessToken())
+    override suspend fun getReportDetailed(
+        firstDate: String,
+        secondDate: String,
+        depCode: String
+    ): DetailReport = api.getReportDetailed(prefs.getAccessToken(),firstDate,secondDate,depCode)
 }

@@ -54,12 +54,23 @@ import com.example.sd.presentation.knowledgeBases.KnowledgeBasesDetailScreen
 import com.example.sd.presentation.knowledgeBases.KnowledgeBasesFilterScreen
 import com.example.sd.presentation.knowledgeBases.KnowledgeBasesScreen
 import com.example.sd.presentation.knowledgeBases.KnowledgeBasesViewModel
+import com.example.sd.presentation.report.ReportViewModel
+import com.example.sd.presentation.report.ReportsScreen
 
 
 @RequiresApi(Build.VERSION_CODES.O)
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter", )
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun MainScreen(viewModel: AuthViewModel,dashboardViewModel: DashboardViewModel,filterViewModel: FilterViewModel,contactViewModel: ContactViewModel,createBidsViewModel: CreateBidsViewModel,accountsViewModel: AccountsViewModel,knowledgeBasesViewModel: KnowledgeBasesViewModel) {
+fun MainScreen(
+    viewModel: AuthViewModel,
+    dashboardViewModel: DashboardViewModel,
+    filterViewModel: FilterViewModel,
+    contactViewModel: ContactViewModel,
+    createBidsViewModel: CreateBidsViewModel,
+    accountsViewModel: AccountsViewModel,
+    knowledgeBasesViewModel: KnowledgeBasesViewModel,
+    reportViewModel: ReportViewModel
+) {
     val navController = rememberNavController()
 
 
@@ -68,45 +79,122 @@ fun MainScreen(viewModel: AuthViewModel,dashboardViewModel: DashboardViewModel,f
             when (navController.currentBackStackEntryAsState().value?.destination?.route) {
                 "BidsScreen", "ReportsScreen", "AnalysisScreen", "ProfileScreen" -> {
 
-                   Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically){
-                       BottomNavigationBar(navController,createBidsViewModel)
-                   }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        BottomNavigationBar(navController, createBidsViewModel)
+                    }
                 }
             }
         }
-    ) {paddingValues ->
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)) {
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
             NavHost(navController, startDestination = "AnalysisScreen") {
                 composable("AnalysisScreen") { AnalysisScreen(navController, dashboardViewModel) }
                 composable("BidsScreen") { BidsScreen(navController, viewModel, filterViewModel) }
                 composable("DetailScreen") { DetailScreen(navController, viewModel) }
-                composable("DetailScreenContact") { DetailScreenContact(navController, contactViewModel) }
+                composable("DetailScreenContact") {
+                    DetailScreenContact(
+                        navController,
+                        contactViewModel
+                    )
+                }
                 composable("ReportsScreen") { /* Экран для отчетов */ }
                 composable("ProfileScreen") { ProfileScreen(navController, viewModel) }
                 composable("FilterScreen") { FilterScreen(navController, filterViewModel) }
-                composable("ContactFilterScreen") { ContactFilterScreen(navController, contactViewModel,accountsViewModel) }
+                composable("ContactFilterScreen") {
+                    ContactFilterScreen(
+                        navController,
+                        contactViewModel,
+                        accountsViewModel
+                    )
+                }
                 composable("SuccessChangePassword") { SuccessChangePassword(navController) }
-                composable("KnowledgeBasesScreen") { KnowledgeBasesScreen(navController,knowledgeBasesViewModel) }
-                composable("KnowledgeBasesDetailScreen") { KnowledgeBasesDetailScreen(navController,knowledgeBasesViewModel) }
-                composable("KnowledgeBasesFilterScreen") { KnowledgeBasesFilterScreen(navController,knowledgeBasesViewModel,contactViewModel) }
-                composable("ContactScreen") { ContactScreen(navController,contactViewModel) }
-                composable("ChangePasswordScreen") { ChangePasswordScreen(navController, viewModel)}
-                composable("step1") { CreateBidsScreen1(navController, viewModel = createBidsViewModel,) }
-                composable("step2") {CreateBidsScreen2(navController, viewModel = createBidsViewModel, ) }
-                composable("step3") { CreateBidsScreen3(navController, viewModel = createBidsViewModel, searchViewModel = contactViewModel) }
-                composable("step4") { CreateBidsScreen4(navController, viewModel = createBidsViewModel, searchViewModel = contactViewModel, accountsViewModel = accountsViewModel) }
-                composable("step5") { CreateBidsScreen5(navController, viewModel = createBidsViewModel, searchViewModel = contactViewModel,) }
-                composable("step6") { CreateBidCreateBidsScreenСompletion(navController,createBidsViewModel) }
+                composable("KnowledgeBasesScreen") {
+                    KnowledgeBasesScreen(
+                        navController,
+                        knowledgeBasesViewModel
+                    )
+                }
+                composable("KnowledgeBasesDetailScreen") {
+                    KnowledgeBasesDetailScreen(
+                        navController,
+                        knowledgeBasesViewModel
+                    )
+                }
+                composable("KnowledgeBasesFilterScreen") {
+                    KnowledgeBasesFilterScreen(
+                        navController,
+                        knowledgeBasesViewModel,
+                        contactViewModel
+                    )
+                }
+                composable("ReportsScreen") {
+                    ReportsScreen(
+                       reportViewModel
+                    )
+                }
+                composable("ContactScreen") { ContactScreen(navController, contactViewModel) }
+                composable("ChangePasswordScreen") {
+                    ChangePasswordScreen(
+                        navController,
+                        viewModel
+                    )
+                }
+                composable("step1") {
+                    CreateBidsScreen1(
+                        navController,
+                        viewModel = createBidsViewModel,
+                    )
+                }
+                composable("step2") {
+                    CreateBidsScreen2(
+                        navController,
+                        viewModel = createBidsViewModel,
+                    )
+                }
+                composable("step3") {
+                    CreateBidsScreen3(
+                        navController,
+                        viewModel = createBidsViewModel,
+                        searchViewModel = contactViewModel
+                    )
+                }
+                composable("step4") {
+                    CreateBidsScreen4(
+                        navController,
+                        viewModel = createBidsViewModel,
+                        searchViewModel = contactViewModel,
+                        accountsViewModel = accountsViewModel
+                    )
+                }
+                composable("step5") {
+                    CreateBidsScreen5(
+                        navController,
+                        viewModel = createBidsViewModel,
+                        searchViewModel = contactViewModel,
+                    )
+                }
+                composable("step6") {
+                    CreateBidCreateBidsScreenСompletion(
+                        navController,
+                        createBidsViewModel
+                    )
                 }
             }
         }
     }
+}
 
 
 @Composable
-fun BottomNavigationBar(navController: NavController,viewModel: CreateBidsViewModel) {
+fun BottomNavigationBar(navController: NavController, viewModel: CreateBidsViewModel) {
     val selectedColor = Color(0xFF004FC7)
     val unselectedColor = Color.Gray
 
@@ -122,7 +210,8 @@ fun BottomNavigationBar(navController: NavController,viewModel: CreateBidsViewMo
     ) {
         Row(
             modifier = Modifier
-                .fillMaxHeight().fillMaxWidth()
+                .fillMaxHeight()
+                .fillMaxWidth()
                 .padding(bottom = 20.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.Top,
@@ -204,10 +293,10 @@ fun BottomNavigationBar(navController: NavController,viewModel: CreateBidsViewMo
                     viewModel.getUUID()
                     viewModel.getEntityNumber("App\\Models\\Bids\\Bid")
                     navController.navigate("step1") {
-                    popUpTo(navController.graph.startDestinationId) { saveState = true }
-                    launchSingleTop = true
-                    restoreState = true
-                }
+                        popUpTo(navController.graph.startDestinationId) { saveState = true }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
 
                 }
             )

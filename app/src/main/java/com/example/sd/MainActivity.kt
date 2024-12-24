@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.sd.presentation.MainNavigation
 import com.example.sd.presentation.knowledgeBases.KnowledgeBasesFilterScreen
+import com.example.sd.presentation.report.ReportsScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

@@ -21,6 +21,7 @@ import com.example.sd.domain.contacts.contactType.ContactType
 import com.example.sd.domain.knowledgeBases.GetKnowledgeBases
 import com.example.sd.domain.knowledgeBases.knowledgeBasesDetail.KnowledgeBasesDetail
 import com.example.sd.domain.knowledgeBases.knowledgeBasesType.KnowledgeBasesType
+import com.example.sd.domain.report.detailReport.DetailReport
 
 
 interface AppRepository {
@@ -85,5 +86,6 @@ interface AppRepository {
     suspend fun getKnowledgeBases(filters: Map<String, String>): GetKnowledgeBases
     suspend fun getKnowledgeBasesDetail(knowledgeBaseId: String): KnowledgeBasesDetail
     suspend fun getCastas(): Castas
+    suspend fun getReportDetailed(firstDate:String,secondDate:String,depCode:String): DetailReport
 }
 

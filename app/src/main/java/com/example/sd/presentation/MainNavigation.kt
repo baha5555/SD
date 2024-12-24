@@ -16,6 +16,7 @@ import com.example.sd.presentation.createBids.CreateBidsViewModel
 import com.example.sd.presentation.dashboard.DashboardViewModel
 import com.example.sd.presentation.filter.FilterViewModel
 import com.example.sd.presentation.knowledgeBases.KnowledgeBasesViewModel
+import com.example.sd.presentation.report.ReportViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -24,15 +25,36 @@ fun MainNavigation() {
     val viewModel: AuthViewModel = hiltViewModel()
     val dashboardViewModel: DashboardViewModel = hiltViewModel()
     val filterViewModel: FilterViewModel = hiltViewModel()
-    val contactViewModel:ContactViewModel = hiltViewModel()
+    val contactViewModel: ContactViewModel = hiltViewModel()
     val createBidsViewModel: CreateBidsViewModel = hiltViewModel()
-    val accountsViewModel:AccountsViewModel = hiltViewModel()
+    val accountsViewModel: AccountsViewModel = hiltViewModel()
     val knowledgeBasesViewModel: KnowledgeBasesViewModel = hiltViewModel()
+    val reportViewModel: ReportViewModel = hiltViewModel()
     NavHost(navController = navController, startDestination = "splash") {
         composable("login") { AuthScreen(navController) }
         composable("splash") { SplashScreen(navController) }
-        composable("load") { LoadingScreen(dashboardViewModel,viewModel, navController = navController,createBidsViewModel = createBidsViewModel, contactViewModel = contactViewModel, knowledgeBasesViewModel = knowledgeBasesViewModel) }
-        composable("drawer") { MainScreen(viewModel,dashboardViewModel,filterViewModel,contactViewModel,createBidsViewModel,accountsViewModel,knowledgeBasesViewModel) }
+        composable("load") {
+            LoadingScreen(
+                dashboardViewModel,
+                viewModel,
+                navController = navController,
+                createBidsViewModel = createBidsViewModel,
+                contactViewModel = contactViewModel,
+                knowledgeBasesViewModel = knowledgeBasesViewModel
+            )
+        }
+        composable("drawer") {
+            MainScreen(
+                viewModel,
+                dashboardViewModel,
+                filterViewModel,
+                contactViewModel,
+                createBidsViewModel,
+                accountsViewModel,
+                knowledgeBasesViewModel,
+                reportViewModel
+            )
+        }
 
     }
 }
