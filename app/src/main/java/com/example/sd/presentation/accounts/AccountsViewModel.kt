@@ -2,6 +2,9 @@ package com.example.sd.presentation.accounts
 
 import android.app.Application
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,6 +16,7 @@ import com.example.sd.domain.accounts.Data
 import com.example.sd.domain.accounts.GetAccountsUseCase
 import com.example.sd.domain.service.serviceItems.GetServiceItemsUseCase
 import com.example.sd.domain.service.servicePacts.GetServicePactsUseCase
+import com.example.sd.presentation.createBids.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -25,6 +29,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -70,11 +75,11 @@ class AccountsViewModel @Inject constructor(
             }
     }
     fun searchServiceItems(): Flow<PagingData<com.example.sd.domain.service.serviceItems.Data>> {
-        return snapshotFlow { getFilterMap() }
+        return snapshotFlow {  }
             .debounce(300)
             .flatMapLatest { query ->
-                val filters = getFilterMap()
-                serviceItemsUseCase(filters).cachedIn(viewModelScope)
+
+                serviceItemsUseCase().cachedIn(viewModelScope)
             }
             .catch { e ->
                 Log.e("ContactViewModel", "Ошибка загрузки: ${e.message}")

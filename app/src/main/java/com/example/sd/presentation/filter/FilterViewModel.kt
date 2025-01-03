@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import androidx.paging.map
 import com.example.sd.domain.bits.Data
 import com.example.sd.domain.filterResponse.FilteredBidsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +23,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -33,14 +37,18 @@ class FilterViewModel @Inject constructor(
     private val filteredBidsUseCase: FilteredBidsUseCase
 ) : ViewModel() {
 
-    var selectedDateTime by mutableStateOf("ДД.ММ.ГГ 00:00")
-    var selectedPlanDateTime by mutableStateOf("ДД.ММ.ГГ 00:00")
-    var selectedState by mutableStateOf("Выберите состояние")
-    var selectedCategory by mutableStateOf("Выберите категорию")
-    var selectedLine by mutableStateOf("Выберите линию")
-    var selectedService by mutableStateOf("Выберите сервис")
-    var selectedContact by mutableStateOf("Выберите контакт")
-    var selectedResponsible by mutableStateOf("Выберите ответственного")
+
+
+    var selectedDateTime by mutableStateOf(Pair("", ""))
+    var selectedPlanDateTime by mutableStateOf(Pair("", ""))
+    var selectedState by mutableStateOf("")
+    var selectedCategory by mutableStateOf("")
+    var selectedLine by mutableStateOf("")
+    var selectedService by mutableStateOf("")
+    var selectedContact by mutableStateOf("")
+    var selectedResponsible by mutableStateOf("")
+    var selectedName by mutableStateOf("")
+
 
     // Храните выбранные фильтры
     private val _selectedFilters = mutableStateListOf<String>()
@@ -48,78 +56,104 @@ class FilterViewModel @Inject constructor(
 
 
 
-
-    fun addFilter(filter: String) {
-        if (filter != "ДД.ММ.ГГ 00:00" && filter != "Выберите состояние" &&
-            filter != "Выберите категорию" && filter != "Выберите линию" &&
-            filter != "Выберите сервис" && filter != "Выберите контакт" &&
-            filter != "Выберите ответственного" && !_selectedFilters.contains(filter)) {
-            _selectedFilters.add(filter)
+    fun showFilter() {
+        if (selectedDateTime != Pair("","")) {
+            _selectedFilters.add("${selectedDateTime.first},${selectedDateTime.second}")
         }
+        if (selectedPlanDateTime != Pair("","")) {
+            _selectedFilters.add("${selectedPlanDateTime.first},${selectedPlanDateTime.second}")
+        }
+        if (selectedState != "") {
+            _selectedFilters.add(selectedState)
+        }
+        if (selectedCategory != "") {
+            _selectedFilters.add(selectedCategory)
+        }
+        if (selectedLine!= "") {
+            _selectedFilters.add(selectedLine)
+        }
+        if (selectedService!= "") {
+            _selectedFilters.add(selectedService)
+        }
+        if (selectedContact!= "") {
+            _selectedFilters.add(selectedContact)
+        }
+        if (selectedResponsible!= "") {
+            _selectedFilters.add(selectedResponsible)
+        }
+        if (selectedName.isNotEmpty()) {
+            _selectedFilters.add(selectedName)
+        }
+
     }
 
     // Удалить фильтр
     fun removeFilter(filter: String) {
         _selectedFilters.remove(filter)
         when (filter) {
-            selectedDateTime -> selectedDateTime = "ДД.ММ.ГГ 00:00"
-            selectedPlanDateTime -> selectedPlanDateTime = "ДД.ММ.ГГ 00:00"
-            selectedState -> selectedState = "Выберите состояние"
-            selectedCategory -> selectedCategory = "Выберите категорию"
-            selectedLine -> selectedLine = "Выберите линию"
-            selectedService -> selectedService = "Выберите сервис"
-            selectedContact -> selectedContact = "Выберите контакт"
-            selectedResponsible -> selectedResponsible = "Выберите ответственного"
+            selectedDateTime.toString() -> selectedDateTime = Pair("","")
+            selectedPlanDateTime.toString() -> selectedPlanDateTime = Pair("","")
+            selectedState -> selectedState = ""
+            selectedCategory -> selectedCategory = ""
+            selectedLine -> selectedLine = ""
+            selectedService -> selectedService = ""
+            selectedContact -> selectedContact = ""
+            selectedResponsible -> selectedResponsible = ""
+            selectedName -> selectedName = ""
         }
     }
 
     // Очистить все фильтры
     fun clearFilters() {
         _selectedFilters.clear()
-        selectedDateTime = "ДД.ММ.ГГ 00:00"
-        selectedPlanDateTime = "ДД.ММ.ГГ 00:00"
-        selectedState = "Выберите состояние"
-        selectedCategory = "Выберите категорию"
-        selectedLine = "Выберите линию"
-        selectedService = "Выберите сервис"
-        selectedContact = "Выберите контакт"
-        selectedResponsible = "Выберите ответственного"
+        selectedDateTime = Pair("","")
+        selectedPlanDateTime = Pair("","")
+        selectedState = ""
+        selectedCategory = ""
+        selectedLine = ""
+        selectedService = ""
+        selectedContact = ""
+        selectedResponsible = ""
+        selectedName = ""
     }
 
     // Преобразуем фильтры в Map для отправки на сервер
     fun getFilterMap(): Map<String, String> {
         val filters = mutableMapOf<String, String>()
 
-        if (selectedDateTime != "ДД.ММ.ГГ 00:00") {
-            filters["filter[created]"] = selectedDateTime
+        if (selectedDateTime != Pair("","")) {
+            filters["filter[created]"] = "${selectedDateTime.first},${selectedDateTime.second}"
         }
-        if (selectedPlanDateTime != "ДД.ММ.ГГ 00:00") {
-            filters["filter[solution_date]"] = selectedPlanDateTime
+        if (selectedPlanDateTime != Pair("","")) {
+            filters["filter[solution_date]"] = "${selectedPlanDateTime.first},${selectedPlanDateTime.second}"
         }
-        if (selectedState != "Выберите состояние") {
+        if (selectedState != "") {
             filters["filter[status]"] = selectedState
         }
-        if (selectedCategory != "Выберите категорию") {
+        if (selectedCategory != "") {
             filters["filter[category]"] = selectedCategory
         }
-        if (selectedLine != "Выберите линию") {
+        if (selectedLine != "") {
             filters["filter[support_level]"] = selectedLine
         }
-        if (selectedService != "Выберите сервис") {
+        if (selectedService != "") {
             filters["filter[service_item]"] = selectedService
         }
-        if (selectedContact != "Выберите контакт") {
+        if (selectedContact != "") {
             filters["filter[contact]"] = selectedContact
         }
-        if (selectedResponsible != "Выберите ответственного") {
+        if (selectedResponsible != "") {
             filters["filter[owner]"] = selectedResponsible
+        }
+        if (selectedName != "") {
+            filters["filter[name]"] = selectedName
         }
 
         return filters
     }
 
     
-    fun fetchFilteredBids(): Flow<PagingData<com.example.sd.domain.bits.Data>> {
+    fun fetchFilteredBids(): Flow<PagingData<Data>> {
         return try {
             // Получаем карту фильтров
             val filters = getFilterMap()

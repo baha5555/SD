@@ -176,7 +176,7 @@ fun ProfileScreen(navController: NavController, viewModel: AuthViewModel) {
                     ) {
                         // Placeholder avatar icon
                         Icon(
-                            painter = painterResource(id = R.drawable.icon_profile),
+                            painter = painterResource(id = R.drawable.icon_profile_55x55),
                             contentDescription = "Avatar",
                             modifier = Modifier
                                 .size(64.dp)
@@ -219,38 +219,44 @@ fun ProfileScreen(navController: NavController, viewModel: AuthViewModel) {
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    // Profile options
-                    ProfileOption(
-                        icon = R.drawable.icon_profile_2,
-                        label = "Профиль"
-                    ){}
-                    ProfileOption(icon = R.drawable.ic_settings, label = "Настройки"){}
-                    ProfileOption(icon = R.drawable.icon_notebook, label = "Контакты"){
+                    ProfileOption(icon = R.drawable.icon_profile_2, label = "Профиль") {
+                        navController.navigate("SoonScreen?title=Профиль")
+                    }
+                    ProfileOption(icon = R.drawable.ic_settings, label = "Настройки") {
+                        navController.navigate("SoonScreen?title=Настройки")
+                    }
+                    ProfileOption(icon = R.drawable.icon_notebook, label = "Контакты") {
                         navController.navigate("ContactScreen")
                     }
-                    ProfileOption(icon = R.drawable.icon_book, label = "База знаний"){navController.navigate("KnowledgeBasesScreen")}
-                    ProfileOption(icon = R.drawable.ic_history, label = "Пользователи"){}
-                    ProfileOption(icon = R.drawable.icon_briefcase, label = "Роли"){}
+                    ProfileOption(icon = R.drawable.icon_book, label = "База знаний") {
+                        navController.navigate("KnowledgeBasesScreen")
+                    }
+                    ProfileOption(icon = R.drawable.ic_history, label = "Пользователи") {
+                        navController.navigate("SoonScreen?title=Пользователи")
+                    }
+                    ProfileOption(icon = R.drawable.icon_briefcase, label = "Роли") {
+                        navController.navigate("SoonScreen?title=Роли")
+                    }
 
 
 
                     Divider(modifier = Modifier.padding(vertical = 8.dp))
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    //  Spacer(modifier = Modifier.height(16.dp))
 
-
-                    Text(
-                        text = "Документация",
-                        fontSize = 16.sp,
-                        color = Color.Black,
-                        modifier = Modifier.padding(vertical = 12.dp)
-                    )
-                    Text(
-                        text = "О приложении",
-                        fontSize = 16.sp,
-                        color = Color.Black,
-                        modifier = Modifier.padding(vertical = 12.dp)
-                    )
+                    /*
+                                        Text(
+                                            text = "Документация",
+                                            fontSize = 16.sp,
+                                            color = Color.Black,
+                                            modifier = Modifier.padding(vertical = 12.dp)
+                                        )
+                                        Text(
+                                            text = "О приложении",
+                                            fontSize = 16.sp,
+                                            color = Color.Black,
+                                            modifier = Modifier.padding(vertical = 12.dp)
+                                        )*/
                     Text(
                         text = "Выйти с аккаунта",
                         fontSize = 16.sp,
@@ -271,11 +277,11 @@ fun ProfileScreen(navController: NavController, viewModel: AuthViewModel) {
 
 
 @Composable
-fun ProfileOption(icon: Int, label: String,onclick:()->Unit) {
+fun ProfileOption(icon: Int, label: String, onclick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable {onclick() }
+            .clickable { onclick() }
             .padding(vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

@@ -68,7 +68,6 @@ import kotlinx.coroutines.delay
 @Composable
 fun AuthScreen(navController: NavController) {
     val viewModel: AuthViewModel = hiltViewModel()
-    val dashboardViewModel: DashboardViewModel = hiltViewModel()
     val name = remember { mutableStateOf("fm") }
     val password = remember { mutableStateOf("1") }
     val nameError = remember { mutableStateOf(false) }
@@ -78,6 +77,11 @@ fun AuthScreen(navController: NavController) {
 
 
 
+
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .fillMaxHeight()
+        .background(Color.White)) {
 
 
     Column(
@@ -225,6 +229,7 @@ fun AuthScreen(navController: NavController) {
             Text(text = errorMessage.value, color = Color.Red, fontSize = 14.sp)
         }
     }
+}
 }
 
 

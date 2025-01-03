@@ -57,8 +57,7 @@ fun LoadingScreen(
     knowledgeBasesViewModel: KnowledgeBasesViewModel
 ) {
 
-    val dashboardState by dashboardViewModel.stateDashboard
-    val authState by viewModel.stateAboutMe
+
 
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.load))
     val progress by animateLottieCompositionAsState(

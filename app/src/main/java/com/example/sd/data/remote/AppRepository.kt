@@ -21,6 +21,8 @@ import com.example.sd.domain.contacts.contactType.ContactType
 import com.example.sd.domain.knowledgeBases.GetKnowledgeBases
 import com.example.sd.domain.knowledgeBases.knowledgeBasesDetail.KnowledgeBasesDetail
 import com.example.sd.domain.knowledgeBases.knowledgeBasesType.KnowledgeBasesType
+import com.example.sd.domain.report.detailReport.DetailReport
+import com.example.sd.domain.report.linesReport.ReportLines
 
 
 interface AppRepository {
@@ -35,7 +37,7 @@ interface AppRepository {
     ): ChangePassword
 
     suspend fun getFilteredData(filters: Map<String, String>): GetBids
-    suspend fun getSearchContact(filters: Map<String, String>): GetContacts
+    suspend fun getSearchContact(filters: Map<String, String>,page: Int): GetContacts
     suspend fun getBidCategories(): GetBidCategories
     suspend fun getBidStatus(): GetBidsStatus
     suspend fun getBidPriorities(): GetBidPriorities
@@ -45,7 +47,7 @@ interface AppRepository {
     suspend fun getBidOrigins(): BidOrigins
     suspend fun getAccounts(filters: Map<String, String>): Accounts
     suspend fun getServicePacts(filters: Map<String, String>): ServicePacts
-    suspend fun getServiceItems(filters: Map<String, String>): ServiceItems
+    suspend fun getServiceItems(page: Int): ServiceItems
     suspend fun createBid(
         id: String?,
         name: String,
@@ -85,5 +87,7 @@ interface AppRepository {
     suspend fun getKnowledgeBases(filters: Map<String, String>): GetKnowledgeBases
     suspend fun getKnowledgeBasesDetail(knowledgeBaseId: String): KnowledgeBasesDetail
     suspend fun getCastas(): Castas
+    suspend fun getReportDetailed(firstDate:String,secondDate:String,depCode:String): DetailReport
+    suspend fun getReportByLine(firstDate:String,secondDate:String): ReportLines
 }
 

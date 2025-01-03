@@ -7,6 +7,7 @@ data class AboutMe(
     val department_id: DepartmentId,
     val email: String,
     val ext_code: String,
+    val init_fio: String,
     val fio: String,
     val id: String,
     val name: String,

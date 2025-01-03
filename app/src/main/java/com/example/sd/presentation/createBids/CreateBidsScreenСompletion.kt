@@ -61,6 +61,7 @@ import com.example.sd.utils.Values
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "StateFlowValueCalledInComposition")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -124,7 +125,7 @@ fun CreateBidCreateBidsScreenСompletion(
                         color = Color(0xFF090A0A),
                         textAlign = TextAlign.Center
                     ),
-                    onClick = { offset ->
+                    onClick = {
                             navController.navigate("appealDetailScreen/SR-443321")
 
                     },
@@ -157,7 +158,7 @@ fun CreateBidCreateBidsScreenСompletion(
                         )
                     )
                 }
-                Text(text = viewModel.nameCreate.value)
+               /* Text(text = viewModel.nameCreate.value)
                 Text(text = viewModel.descriptionCreate.value)
                 Text(text = viewModel.statusCreate.value)
                 Text(text = viewModel.categoryCreate.value)
@@ -171,11 +172,10 @@ fun CreateBidCreateBidsScreenСompletion(
                 Text(text = viewModel.originCreate.value)
                 Text(text = viewModel.regDataCreate.value)
                 Text(text = viewModel.respDataCreate.value)
-                Text(text = viewModel.resolutionDataCreate.value)
+                Text(text = viewModel.resolutionDataCreate.value)*/
 
             }
 
         }
     )
 }
-

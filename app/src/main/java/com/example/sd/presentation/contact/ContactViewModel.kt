@@ -292,7 +292,7 @@ class ContactViewModel @Inject constructor(
             }
     }
     fun searchContact(): Flow<PagingData<com.example.sd.domain.contacts.Data>> {
-        return snapshotFlow { getFilterMap() }
+        return snapshotFlow {  }
             .debounce(300)
             .flatMapLatest { query ->
                 val filters = getFilterMap()

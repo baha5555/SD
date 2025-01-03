@@ -25,10 +25,13 @@ import com.example.sd.presentation.states.AuthResponseState
 import com.example.sd.presentation.states.BidsResponseState
 import com.example.sd.presentation.states.ChangePasswordResponseState
 import com.example.sd.presentation.states.GetContactsResponseState
+import com.example.sd.utils.Values.ACCOUNT_ID
+import com.example.sd.utils.Values.CONTACT_ID
 import com.example.sd.utils.Values.DEPARTAMENT
 import com.example.sd.utils.Values.DEPARTAMENTID
 import com.example.sd.utils.Values.FIO
 import com.example.sd.utils.Values.ROLES
+import com.example.sd.utils.Values.ROLES_RU
 import com.example.sd.utils.Values.USERID
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -171,7 +174,10 @@ class AuthViewModel @Inject constructor(
                         _stateAboutMe.value = AboutMeResponseState(response = response)
                         USERID.value = _stateAboutMe.value.response?.id.toString()
                         _stateAboutMe.value.response?.roles!!.forEach { ROLES.value =it.name}
+                        _stateAboutMe.value.response?.roles!!.forEach { ROLES_RU.value =it.name_ru}
                         DEPARTAMENT.value = _stateAboutMe.value.response?.department_id?.name.toString()
+                        ACCOUNT_ID.value = _stateAboutMe.value.response?.account_id?.id.toString()
+                        CONTACT_ID.value = _stateAboutMe.value.response?.contact_id?.id.toString()
                         DEPARTAMENTID.value = _stateAboutMe.value.response?.department_id?.id.toString()
                         FIO.value = _stateAboutMe.value.response?.fio.toString()
 

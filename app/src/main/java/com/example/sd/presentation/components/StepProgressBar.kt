@@ -22,7 +22,7 @@ import com.example.sd.presentation.createBids.CreateBidsViewModel
 @Composable
 fun StepProgressBar(viewModel: CreateBidsViewModel) {
     val currentStep by viewModel.currentStep.collectAsState()
-    val totalSteps = 6
+    val totalSteps = 3
 
     val progressAnimDuration = 1500
     val progressAnimation by animateFloatAsState(

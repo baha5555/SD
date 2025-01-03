@@ -16,10 +16,10 @@ class GetServiceItemsUseCase @Inject constructor(
     private val applicationApi: ApplicationApi,
     private val prefs: CustomPreference
 ) {
-    operator fun invoke(filters:  Map<String, String>): Flow<PagingData<Data>> {
+    operator fun invoke(): Flow<PagingData<Data>> {
         return   Pager(
                 PagingConfig(pageSize = 10),
-                pagingSourceFactory = { AccountsPager(applicationApi, prefs, filters) }
+                pagingSourceFactory = { AccountsPager(applicationApi, prefs, ) }
             ).flow.catch { e ->
             emit(
                 PagingData.empty<Data>() // Возвращаем пустой список данных
@@ -31,30 +31,38 @@ class GetServiceItemsUseCase @Inject constructor(
     }
 }
 
+
 class AccountsPager(
     private val applicationApi: ApplicationApi,
     private val prefs: CustomPreference,
-    private val filters: Map<String, String>
 ) : PagingSource<Int, Data>() {
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult.Page<Int, Data> {
-        val pageNumber = params.key ?: 1
-        val response = applicationApi.getServiceItems(prefs.getAccessToken(), filters)
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Data> {
+        val pageNumber = params.key ?: 1 // Текущая страница
 
-        val prevKey = if (pageNumber > 1) pageNumber - 1 else null
-        val nextKey = if (response.data.isNullOrEmpty()) null else pageNumber + 1
+        return try {
+            val response = applicationApi.getServiceItems(
+                token = prefs.getAccessToken(),
+                page = pageNumber
+            )
 
-        return LoadResult.Page(
-            data = response.data,
-            prevKey = prevKey,
-            nextKey = nextKey
-        )
+            val meta = response.meta
+            val nextPage = if (meta.current_page < meta.last_page) meta.current_page + 1 else null
+
+            LoadResult.Page(
+                data = response.data,
+                prevKey = if (meta.current_page > 1) meta.current_page - 1 else null,
+                nextKey = nextPage
+            )
+        } catch (e: Exception) {
+            LoadResult.Error(e)
+        }
     }
 
     override fun getRefreshKey(state: PagingState<Int, Data>): Int? {
-        return state.anchorPosition?.let {
-            state.closestPageToPosition(it)?.prevKey?.plus(1)
-                ?: state.closestPageToPosition(it)?.nextKey?.minus(1)
+        return state.anchorPosition?.let { anchorPosition ->
+            state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
+                ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
         }
     }
 }

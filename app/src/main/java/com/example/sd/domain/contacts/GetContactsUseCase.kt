@@ -46,19 +46,20 @@ class ContactsPager(
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Data> {
         val pageNumber = params.key ?: 1
-        val result =
-            runCatching { applicationApi.getSearchContact(prefs.getAccessToken(), filters) }
-        val response = result.getOrNull() ?: return LoadResult.Error<Int, Data>(Exception(""))
+        return try {
+            val response = applicationApi.getSearchContact(prefs.getAccessToken(), filters,pageNumber )
 
-        val prevKey = if (pageNumber == 1) null else pageNumber - 1
-        val nextKey = if (response.data.isNullOrEmpty()) null else pageNumber + 1
+            val meta = response.meta
+            val nextPage = if (meta.current_page < meta.last_page) meta.current_page + 1 else null
 
-
-        return LoadResult.Page(
-            data = response.data,
-            prevKey = prevKey,
-            nextKey = nextKey
-        )
+            LoadResult.Page(
+                data = response.data,
+                prevKey = if (meta.current_page > 1) meta.current_page - 1 else null,
+                nextKey = nextPage
+            )
+        } catch (e: Exception) {
+            LoadResult.Error(e)
+        }
     }
 
     override fun getRefreshKey(state: PagingState<Int, Data>): Int? {

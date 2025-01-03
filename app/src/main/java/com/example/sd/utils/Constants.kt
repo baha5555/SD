@@ -19,7 +19,10 @@ object Constants {
 object Values {
     var USERID: MutableState<String> = mutableStateOf("")
     var ROLES: MutableState<String> = mutableStateOf("")
+    var ROLES_RU: MutableState<String> = mutableStateOf("")
     var FIO: MutableState<String> = mutableStateOf("")
+    var ACCOUNT_ID: MutableState<String> = mutableStateOf("")
+    var CONTACT_ID: MutableState<String> = mutableStateOf("")
     var DEPARTAMENT: MutableState<String> = mutableStateOf("")
     var DEPARTAMENTID: MutableState<String> = mutableStateOf("")
     var UUID: MutableState<String> = mutableStateOf("")

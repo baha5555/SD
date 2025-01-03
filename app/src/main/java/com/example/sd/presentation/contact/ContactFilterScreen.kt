@@ -279,28 +279,24 @@ fun ContactFilterScreen(
                                 contactViewModel.selectedContragent = selectedName
                             }
                         )
-                        SearchableDropdownField(
+                        TagInputField(
                             label = "Филиал",
                             placeholder = "Выберите филиал",
-                            options = contactList.value,
-                            expandedState = expandedState,
-                            currentId = "selectedBranch",
-                            initialValue = contactViewModel.selectedBranch,
-                            onOptionSelected = { selectedName ->
-                                contactViewModel.selectedBranch = selectedName
+                            value = contactViewModel.selectedBranch,
+                            onValueChange = { srm ->
+                                contactViewModel.selectedBranch = srm
                             }
                         )
-                        SearchableDropdownField(
+
+                        TagInputField(
                             label = "Отдел",
                             placeholder = "Выберите отдел",
-                            options = contactList.value,
-                            expandedState = expandedState,
-                            currentId = "selectedDepartment",
-                            initialValue = contactViewModel.selectedDepartment,
-                            onOptionSelected = { selectedName ->
-                                contactViewModel.selectedDepartment = selectedName
+                            value = contactViewModel.selectedDepartment,
+                            onValueChange = { srm ->
+                                contactViewModel.selectedDepartment = srm
                             }
                         )
+
                         SearchableDropdownField(
                             label = "Должность",
                             placeholder = "Выберите должность",

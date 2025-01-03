@@ -16,6 +16,7 @@ import android.webkit.WebViewClient
 
 import android.widget.FrameLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -86,17 +87,24 @@ import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.rememberImagePainter
 import com.example.sd.R
+import com.example.sd.presentation.components.LottieLoader
 import com.kevinnzou.web.WebView
 import com.kevinnzou.web.rememberWebViewStateWithHTMLData
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun KnowledgeBasesDetailScreen(navController: NavController, viewModel: KnowledgeBasesViewModel) {
+fun KnowledgeBasesDetailScreen(navController: NavController, viewModel: KnowledgeBasesViewModel,id:String) {
     val data = viewModel.stateGetKnowledgeBasesDetail.value.response?.data
     val context = LocalContext.current
     val webView = remember { WebView(context) }
     webView.loadDataWithBaseURL(null, data?.notes.toString(), "text/html", "UTF-8", null)
+
+
+    //Toast.makeText(context, "it/s id  = = == = "+id, Toast.LENGTH_SHORT).show()
+    LaunchedEffect(Unit) {
+        viewModel.getKnowledgeBasesDetail(id){success, message ->}
+    }
 
     Scaffold(
         topBar = {
@@ -206,7 +214,7 @@ fun KnowledgeBasesDetailScreen(navController: NavController, viewModel: Knowledg
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator()
+                    LottieLoader()
                 }
             }
         },
