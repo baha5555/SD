@@ -91,10 +91,11 @@ fun SearchableDropdownField(
             },
             singleLine = true,
             trailingIcon = {
-                Icon(modifier = Modifier.clickable {
-                    expandedState.value = null
-                },
-                    painter =if(isExpanded) painterResource(id = R.drawable.icon_up) else painterResource(id = R.drawable.icon_down) ,
+                Icon(
+                    modifier = Modifier.clickable {
+                        expandedState.value = if (expandedState.value == currentId) null else currentId
+                    },
+                    painter = if (isExpanded) painterResource(id = R.drawable.icon_up) else painterResource(id = R.drawable.icon_down),
                     contentDescription = null,
                     tint = Color(0xFFA0AEC0)
                 )

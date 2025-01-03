@@ -86,7 +86,10 @@ fun KnowledgeBasesScreen(
     Scaffold(
         topBar = {
 
-                    Column(verticalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth().fillMaxHeight(if (knowledgeBasesViewModel.selectedFilters.isNotEmpty()) 0.23f else 0.18f).padding(horizontal = 1.dp)) {
+                    Column(verticalArrangement = Arrangement.Center, modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(if (knowledgeBasesViewModel.selectedFilters.isNotEmpty()) 0.23f else 0.18f)
+                        .padding(horizontal = 1.dp)) {
                         Row(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically,
@@ -201,7 +204,8 @@ fun KnowledgeBasesScreen(
                         }
                         Column(
                             modifier = Modifier
-                                .fillMaxSize().padding(horizontal =16.dp)
+                                .fillMaxSize()
+                                .padding(horizontal = 16.dp)
                                 .fillMaxHeight(), verticalArrangement = Arrangement.Center
                         ) {
 
@@ -245,12 +249,7 @@ fun KnowledgeBasesScreen(
                             Log.d("Loading4444444", "item: $item")
                             item?.let {
                                 ExpandableTicketCard(ticket = it) {
-                                    knowledgeBasesViewModel.getKnowledgeBasesDetail(it.id.toString()) { success, error ->
-                                        if (success) {
-                                            navController.navigate("KnowledgeBasesDetailScreen")
-                                        } else {
-                                        }
-                                    }
+                                    navController.navigate("KnowledgeBasesDetailScreen?id=${it.id}")
                                 }
                             }
                         }

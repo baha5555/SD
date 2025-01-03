@@ -1,5 +1,6 @@
 package com.example.sd.presentation.report
 
+import android.annotation.SuppressLint
 import android.icu.text.SimpleDateFormat
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
@@ -56,6 +57,7 @@ import com.example.sd.presentation.components.StatisticsCard
 import com.example.sd.presentation.components.StatisticsItem
 import java.util.Calendar
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun DetailedTabContent(reportViewModel: ReportViewModel) {
 
@@ -91,8 +93,8 @@ fun DetailedTabContent(reportViewModel: ReportViewModel) {
         Spacer(modifier = Modifier.height(16.dp))
 
         SearchableDropdownField(
-            label = "Учреждение",
-            placeholder = "Выберите учреждение",
+            label = "Филиал",
+            placeholder = "Выберите филиал",
             options = reportViewModel.itemNameAccount(),
             expandedState = expandedState,
             currentId = "Account",

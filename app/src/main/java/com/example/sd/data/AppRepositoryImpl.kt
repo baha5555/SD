@@ -25,6 +25,7 @@ import com.example.sd.domain.knowledgeBases.GetKnowledgeBases
 import com.example.sd.domain.knowledgeBases.knowledgeBasesDetail.KnowledgeBasesDetail
 import com.example.sd.domain.knowledgeBases.knowledgeBasesType.KnowledgeBasesType
 import com.example.sd.domain.report.detailReport.DetailReport
+import com.example.sd.domain.report.linesReport.ReportLines
 
 
 class AppRepositoryImpl(
@@ -47,8 +48,8 @@ class AppRepositoryImpl(
     override suspend fun getFilteredData(filters: Map<String, String>): GetBids =
         api.getFilteredData(prefs.getAccessToken(), filters)
 
-    override suspend fun getSearchContact(filters: Map<String, String>): GetContacts =
-        api.getSearchContact(prefs.getAccessToken(), filters)
+    override suspend fun getSearchContact(filters: Map<String, String>, page: Int): GetContacts =
+        api.getSearchContact(prefs.getAccessToken(), filters,page)
 
     override suspend fun getBidCategories(): GetBidCategories =
         api.getBidCategories(prefs.getAccessToken())
@@ -70,8 +71,8 @@ class AppRepositoryImpl(
     override suspend fun getServicePacts(filters: Map<String, String>): ServicePacts =
         api.getServicePacts(prefs.getAccessToken(), filters)
 
-    override suspend fun getServiceItems(filters: Map<String, String>): ServiceItems =
-        api.getServiceItems(prefs.getAccessToken(), filters)
+    override suspend fun getServiceItems(page: Int): ServiceItems =
+        api.getServiceItems(prefs.getAccessToken(),page)
 
     override suspend fun createBid(
         id: String?,
@@ -148,4 +149,10 @@ class AppRepositoryImpl(
         secondDate: String,
         depCode: String
     ): DetailReport = api.getReportDetailed(prefs.getAccessToken(),firstDate,secondDate,depCode)
+
+    override suspend fun getReportByLine(
+        firstDate: String,
+        secondDate: String,
+
+    ): ReportLines = api.getReportByLine(prefs.getAccessToken(),firstDate,secondDate)
 }

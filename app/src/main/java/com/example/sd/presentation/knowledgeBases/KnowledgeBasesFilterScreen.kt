@@ -35,9 +35,11 @@ import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,6 +56,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.sd.R
+import com.example.sd.presentation.components.DateRangePickerInput
 import com.example.sd.presentation.components.SearchableDropdownField
 import com.example.sd.presentation.contact.ContactViewModel
 import com.example.sd.presentation.createBids.Status
@@ -75,6 +78,9 @@ fun KnowledgeBasesFilterScreen(
 
     val expandedState = remember { mutableStateOf<String?>(null) }
     val contactList = remember { mutableStateOf<List<String>>(emptyList()) }
+
+    var selectedDateTime by remember { mutableStateOf(Pair<Long?, Long?>(null, null)) }
+    var selectedPlanDateTime by remember { mutableStateOf(Pair<Long?, Long?>(null, null)) }
 
     var job: Job? = null
     val lazyPagingItems =
@@ -134,7 +140,7 @@ fun KnowledgeBasesFilterScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 1.dp)
-                        .padding(end = 10.dp)
+                        .padding(end = 10.dp, top = 10.dp)
                         .background(Color.White)
                 ) {
                     IconButton(onClick = {
@@ -185,29 +191,62 @@ fun KnowledgeBasesFilterScreen(
                     Column(
                         verticalArrangement = Arrangement.spacedBy(15.dp)
                     ) {
-                        SimpleDateRangePickerField(
-                            label = "Дата cоздания",
-                            startDate = viewModel.createStartDate,
-                            endDate = viewModel.createEndDate,
-                            onStartDateChange = { newStartDate ->
-                                viewModel.createStartDate = newStartDate
-                            },
-                            onEndDateChange = { newEndDate ->
-                                viewModel.createEndDate = newEndDate
-                            }
-                        )
 
-                        SimpleDateRangePickerField(
-                            label = "Дата изменения",
-                            startDate = viewModel.updateStarDate,
-                            endDate = viewModel.updateEndDate,
-                            onStartDateChange = { newStartDate ->
-                                viewModel.updateStarDate = newStartDate
-                            },
-                            onEndDateChange = { newEndDate ->
-                                viewModel.updateEndDate = newEndDate
-                            }
-                        )
+                        Column {
+                            Text(
+                                text = "Дата cоздания",
+                                style = TextStyle(
+                                    fontSize = 14.sp,
+                                    lineHeight = 21.sp,
+                                    fontFamily = FontFamily(Font(R.font.inter)),
+                                    fontWeight = FontWeight(600),
+                                    color = Color(0xFF5D6A83),
+                                    letterSpacing = 0.2.sp,
+                                ),
+                                modifier = Modifier.padding(bottom = 0.dp)
+                            )
+                            DateRangePickerInput(
+                                selectedDateRange = selectedDateTime,
+                                onDateRangeSelected = { dateRange ->
+                                    selectedDateTime = dateRange
+                                },
+                                onApiCall = { first, second ->
+                                    val startDate = first.formatTo("yyyy-MM-dd")
+                                    val endDate = second.formatTo("yyyy-MM-dd")
+                                    viewModel.selectedDateTime = Pair(startDate, endDate)
+                                }
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(0.dp))
+                        Column {
+
+                            Text(
+                                text = "Дата изменения",
+                                style = TextStyle(
+                                    fontSize = 14.sp,
+                                    lineHeight = 21.sp,
+                                    fontFamily = FontFamily(Font(R.font.inter)),
+                                    fontWeight = FontWeight(600),
+                                    color = Color(0xFF5D6A83),
+                                    letterSpacing = 0.2.sp,
+                                ),
+                                modifier = Modifier.padding(bottom = 1.dp)
+                            )
+
+                            DateRangePickerInput(
+                                selectedDateRange = selectedPlanDateTime,
+                                onDateRangeSelected = { dateRange ->
+                                    selectedPlanDateTime = dateRange
+                                },
+                                onApiCall = { first, second ->
+                                    val startDate = first.formatTo("yyyy-MM-dd")
+                                    val endDate = second.formatTo("yyyy-MM-dd")
+                                    viewModel.selectedPlanDateTime = Pair(startDate, endDate)
+
+                                }
+                            )
+                        }
 
 
                         SearchableDropdownField(

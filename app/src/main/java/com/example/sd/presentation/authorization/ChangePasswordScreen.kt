@@ -48,7 +48,7 @@ fun ChangePasswordScreen(navController: NavController,viewModel: AuthViewModel) 
     val errorMessage = remember { mutableStateOf("") }
 
 
-    Toast.makeText(navController.context, Values.USERID.value.toString(), Toast.LENGTH_LONG).show()
+        //Toast.makeText(navController.context, Values.USERID.value.toString(), Toast.LENGTH_LONG).show()
     Scaffold(
         topBar = {
             Row(
@@ -61,7 +61,9 @@ fun ChangePasswordScreen(navController: NavController,viewModel: AuthViewModel) 
             ) {
 
 
-                IconButton(onClick = {}) {
+                IconButton(onClick = {
+                    navController.popBackStack()
+                }) {
                     Icon(
                         painter = painterResource(id = R.drawable.icon_left),
                         contentDescription = "Back"

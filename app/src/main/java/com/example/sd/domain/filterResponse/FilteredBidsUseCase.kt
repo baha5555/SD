@@ -36,27 +36,28 @@ class FilteredBidsPager(
     private val applicationApi: ApplicationApi,
     private val prefs: CustomPreference,
     private val filters:  Map<String, String>
-) : PagingSource<Int, com.example.sd.domain.bits.Data>() {
+) : PagingSource<Int,Data>() {
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult.Page<Int, com.example.sd.domain.bits.Data> {
-        val pageNumber = params.key ?: 1
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int,Data> {
         val accessToken = prefs.getAccessToken()
 
         return try {
             val response = applicationApi.getFilteredData(accessToken, filters)
 
-            val prevKey = if (pageNumber > 1) pageNumber - 1 else null
-            val nextKey = if (response.data.isNullOrEmpty()) null else pageNumber + 1
+            val meta = response.meta
+            val nextPage = if (meta.current_page < meta.last_page) meta.current_page + 1 else null
 
             LoadResult.Page(
                 data = response.data,
-                prevKey = prevKey,
-                nextKey = nextKey
+                prevKey = if (meta.current_page > 1) meta.current_page - 1 else null,
+                nextKey = nextPage
             )
         } catch (e: Exception) {
+            // Логируем ошибку для отладки
             Log.d("FilteredBidsPager", "Ошибка при загрузке данных: ${e.message}")
-            LoadState.Error(e)  // Возвращаем ошибку в PagingSource
-            throw Exception("Ошибка при загрузке данных: ${e.message}")
+
+            // Возвращаем ошибку для обработки PagingSource
+            return LoadResult.Error(e)
         }
     }
 

@@ -9,12 +9,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -32,6 +36,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -63,10 +68,10 @@ fun CreateBidsScreen1(
     UUID.value = viewModel.stateGetUUID.value.response.toString()
     val entityNumber = viewModel.stateEntityNumber.value.response?.number.toString()
 
-    Log.i("UUID", "Values UUID ->${UUID.value}")
+    /*Log.i("UUID", "Values UUID ->${UUID.value}")
     Log.i("UUID", "Values textEntityNumber ->${text}")
     Log.i("UUID", "Values EntityNumber ->${entityNumber}")
-    Toast.makeText(context, "Values UUID -> ${UUID.value}", Toast.LENGTH_SHORT).show()
+    Toast.makeText(context, "Values UUID -> ${UUID.value}", Toast.LENGTH_SHORT).show()*/
     Scaffold(
         topBar = {
             Column {
@@ -126,6 +131,7 @@ fun CreateBidsScreen1(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
+                .imePadding()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp), verticalArrangement = Arrangement.SpaceBetween
         ) {
@@ -215,19 +221,20 @@ fun CreateBidsScreen1(
                     )
                 )
             }
+
             Button(
                 onClick = {
                     viewModel.goToNextStep()
-                    viewModel.createBid {
-
-                    }
                     navController.navigate("step2")
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 40.dp)
-                    .height(56.dp),
+                    .padding(bottom = 24.dp)
+                    .height(57.dp).padding(bottom = 1.dp)
+                    .imePadding(),
+
                 shape = RoundedCornerShape(12.dp),
+
                 colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF004FC7)),
                 enabled = viewModel.nameCreate.value != "" && viewModel.descriptionCreate.value != ""
             ) {
@@ -238,7 +245,7 @@ fun CreateBidsScreen1(
                 )
             }
         }
+
     }
 
 }
-

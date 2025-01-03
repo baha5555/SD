@@ -22,6 +22,7 @@ import com.example.sd.domain.knowledgeBases.GetKnowledgeBases
 import com.example.sd.domain.knowledgeBases.knowledgeBasesDetail.KnowledgeBasesDetail
 import com.example.sd.domain.knowledgeBases.knowledgeBasesType.KnowledgeBasesType
 import com.example.sd.domain.report.detailReport.DetailReport
+import com.example.sd.domain.report.linesReport.ReportLines
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.Field
@@ -80,8 +81,9 @@ interface ApplicationApi {
     @GET("contacts/search")
     suspend fun getSearchContact(
         @Header("Authorization") token: String,
-        @QueryMap(encoded = true) filters: Map<String, String>
-    ): GetContacts
+        @QueryMap(encoded = true) filters: Map<String, String>,
+        @Query("page") page: Int,
+        ): GetContacts
 
     @GET("accounts")
     suspend fun getAccounts(
@@ -98,7 +100,7 @@ interface ApplicationApi {
     @GET("serviceItems")
     suspend fun getServiceItems(
         @Header("Authorization") token: String,
-        @QueryMap(encoded = true) filters: Map<String, String>
+        @Query("page") page: Int,
     ): ServiceItems
 
     @GET("bidCategories")
@@ -222,4 +224,11 @@ interface ApplicationApi {
         @Query("second_date") secondDate: String,
         @Query("dep_code") depCode: String,
     ): DetailReport
+
+    @POST("reports/bidLinesReport")
+    suspend fun getReportByLine(
+        @Header("Authorization") token: String,
+        @Query("start_date") firstDate: String,
+        @Query("end_date") secondDate: String,
+    ): ReportLines
 }

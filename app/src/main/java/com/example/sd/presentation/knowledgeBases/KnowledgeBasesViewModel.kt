@@ -31,15 +31,21 @@ import javax.inject.Inject
 class KnowledgeBasesViewModel @Inject constructor(
     private val knowledgeBasesUseCase: KnowledgeBasesUseCase,
     private val getKnowledgeBaseTypesUseCase: KnowledgeBaseTypesUseCase,
-    private val getKnowledgeBasesDetailUseCase : GetKnowledgeBasesDetailUseCase
+    private val getKnowledgeBasesDetailUseCase: GetKnowledgeBasesDetailUseCase
 ) : ViewModel() {
 
     private val _stateGetKnowledgeBasesDetail = mutableStateOf(KnowledgeBasesDetailResponseState())
-    val stateGetKnowledgeBasesDetail: State<KnowledgeBasesDetailResponseState> = _stateGetKnowledgeBasesDetail
+    val stateGetKnowledgeBasesDetail: State<KnowledgeBasesDetailResponseState> =
+        _stateGetKnowledgeBasesDetail
 
 
     private val _stateGetKnowledgeBasesType = mutableStateOf(KnowledgeBasesTypeResponseState())
-    val stateGetKnowledgeBasesType: State<KnowledgeBasesTypeResponseState> = _stateGetKnowledgeBasesType
+    val stateGetKnowledgeBasesType: State<KnowledgeBasesTypeResponseState> =
+        _stateGetKnowledgeBasesType
+
+
+    var selectedDateTime by mutableStateOf(Pair("", ""))
+    var selectedPlanDateTime by mutableStateOf(Pair("", ""))
 
     var createStartDate by mutableStateOf("ДД.ММ.ГГ")
     var createEndDate by mutableStateOf("ДД.ММ.ГГ")
@@ -56,20 +62,12 @@ class KnowledgeBasesViewModel @Inject constructor(
     val selectedFilters: List<String> get() = _selectedFilters
 
 
-
-
     fun showFilter() {
-        if (createStartDate != "ДД.ММ.ГГ") {
-            _selectedFilters.add(createStartDate)
+        if (selectedDateTime != Pair("", "")) {
+            _selectedFilters.add("${selectedDateTime.first},${selectedDateTime.second}")
         }
-        if (createEndDate != "ДД.ММ.ГГ") {
-            _selectedFilters.add(createEndDate)
-        }
-        if (updateStarDate != "ДД.ММ.ГГ") {
-            _selectedFilters.add(updateStarDate)
-        }
-        if (updateEndDate != "ДД.ММ.ГГ") {
-            _selectedFilters.add(updateEndDate)
+        if (selectedPlanDateTime != Pair("", "")) {
+            _selectedFilters.add("${selectedPlanDateTime.first},${selectedPlanDateTime.second}")
         }
         if (selectedType.isNotEmpty()) {
             _selectedFilters.add(selectedType)
@@ -92,10 +90,8 @@ class KnowledgeBasesViewModel @Inject constructor(
     fun removeFilter(filter: String) {
         _selectedFilters.remove(filter)
         when (filter) {
-            createStartDate -> createStartDate = "ДД.ММ.ГГ"
-            createEndDate -> createEndDate = "ДД.ММ.ГГ"
-            updateEndDate -> updateEndDate = "ДД.ММ.ГГ"
-            updateStarDate -> updateStarDate = "ДД.ММ.ГГ"
+            selectedDateTime.toString() -> selectedDateTime = Pair("","")
+            selectedPlanDateTime.toString() -> selectedPlanDateTime = Pair("","")
             selectedType -> selectedType = ""
             selectedCreate -> selectedCreate = ""
             selectedUpdate -> selectedUpdate = ""
@@ -107,10 +103,8 @@ class KnowledgeBasesViewModel @Inject constructor(
 
     fun clearFilters() {
         _selectedFilters.clear()
-        createStartDate = "ДД.ММ.ГГ"
-        createEndDate = "ДД.ММ.ГГ"
-        updateEndDate = "ДД.ММ.ГГ"
-        updateStarDate = "ДД.ММ.ГГ"
+        selectedDateTime = Pair("","")
+        selectedPlanDateTime = Pair("","")
         selectedType = ""
         selectedCreate = ""
         selectedUpdate = ""
@@ -154,7 +148,8 @@ class KnowledgeBasesViewModel @Inject constructor(
                     }
 
                     is Resource.Loading -> {
-                        _stateGetKnowledgeBasesDetail.value = KnowledgeBasesDetailResponseState(isLoading = true)
+                        _stateGetKnowledgeBasesDetail.value =
+                            KnowledgeBasesDetailResponseState(isLoading = true)
                     }
                 }
             }.launchIn(viewModelScope)
@@ -164,26 +159,14 @@ class KnowledgeBasesViewModel @Inject constructor(
     fun getFilterMap(): Map<String, String> {
         val filters = mutableMapOf<String, String>()
 
-        if (createStartDate != "ДД.ММ.ГГ" && createEndDate != "ДД.ММ.ГГ") {
-            filters["filter[created]"] =
-                "${createStartDate.formatTo("dd-MM-yyyy")},${createEndDate.formatTo("dd-MM-yyyy")}"
-        } else if (createStartDate != "ДД.ММ.ГГ" && createEndDate == "ДД.ММ.ГГ") {
-            filters["filter[created]"] = "${createStartDate.formatTo("dd-MM-yyyy")}}"
-        } else if (createStartDate == "ДД.ММ.ГГ" && createEndDate != "ДД.ММ.ГГ") {
-            filters["filter[created]"] = ",${createEndDate.formatTo("dd-MM-yyyy")}"
+
+
+        if (selectedDateTime != Pair("","")) {
+            filters["filter[created]"] = "${selectedDateTime.first},${selectedDateTime.second}"
         }
-
-
-
-        if (updateStarDate != "ДД.ММ.ГГ" || updateEndDate != "ДД.ММ.ГГ") {
-            filters["filter[updated]"] =
-                "${updateStarDate.formatTo("dd-MM-yyyy")},${updateEndDate.formatTo("dd-MM-yyyy")}"
-        } else if (updateStarDate != "ДД.ММ.ГГ" && updateEndDate == "ДД.ММ.ГГ") {
-            filters["filter[created]"] = "${createStartDate.formatTo("dd-MM-yyyy")}}"
-        } else if (updateStarDate == "ДД.ММ.ГГ" && updateEndDate != "ДД.ММ.ГГ") {
-            filters["filter[created]"] = ",${updateEndDate.formatTo("dd-MM-yyyy")}"
+        if (selectedPlanDateTime != Pair("","")) {
+            filters["filter[updated]"] = "${selectedPlanDateTime.first},${selectedPlanDateTime.second}"
         }
-
         if (selectedType != "") {
             filters["filter[type]"] = selectedType
         }
@@ -222,8 +205,6 @@ class KnowledgeBasesViewModel @Inject constructor(
     }
 
 
-
-
     fun itemTypeKnowledge(): List<String> {
         val knowledgeBasesType = _stateGetKnowledgeBasesType.value.response
         return knowledgeBasesType?.data?.map { it.name } ?: emptyList()
@@ -257,7 +238,8 @@ class KnowledgeBasesViewModel @Inject constructor(
                 }
 
                 is Resource.Loading -> {
-                    _stateGetKnowledgeBasesType.value = KnowledgeBasesTypeResponseState(isLoading = true)
+                    _stateGetKnowledgeBasesType.value =
+                        KnowledgeBasesTypeResponseState(isLoading = true)
                 }
             }
         }.launchIn(viewModelScope)

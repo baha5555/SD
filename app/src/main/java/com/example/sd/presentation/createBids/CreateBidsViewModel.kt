@@ -36,6 +36,7 @@ import com.example.sd.presentation.states.GetEntityNumberResponseState
 import com.example.sd.presentation.states.GetUUIDResponseState
 import com.example.sd.utils.Resource
 import com.example.sd.utils.Values
+import com.example.sd.utils.Values.CONTACT_ID
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -188,7 +189,7 @@ class CreateBidsViewModel @Inject constructor(
     private val _resolutionDataCreateID = MutableStateFlow("ДД.ММ.ГГ 00:00")
     val resolutionDataCreateID: StateFlow<String> = _resolutionDataCreateID
 
-    // Функция для обновления значения
+
     fun updateField(field: String, id: String, name: String) {
         when (field) {
             "name" -> {
@@ -331,14 +332,14 @@ class CreateBidsViewModel @Inject constructor(
             name = _nameCreate.value,
             number = _stateEntityNumber.value.response?.number.toString(),
             symptoms = _descriptionCreate.value,
-            ownerId = _responsibleCreateID.value,
-            responseDate = _respDataCreate.value.format("yy-MM-dd"),
-            solutionDate = _resolutionDataCreate.value.format("yy-MM-dd"),
+            ownerId = CONTACT_ID.value,
+            responseDate = null,
+            solutionDate = null,
             bidStatusId = _statusCreateID.value,
             bidPriorityId = _priorityCreateID.value,
-            bidOriginId = _originCreateID.value,
-            accountId = _accountCreateID.value,
-            contactId = _contactCreateID.value,
+            bidOriginId = "58a50e20-4e3a-11eb-86b9-2fb3a8957dbc",// Звонок
+            accountId = Values.ACCOUNT_ID.value,
+            contactId = CONTACT_ID.value,
             solution = null,
             satisfactionLevelId = null,
             bidCategoryId = _categoryCreateID.value,
@@ -347,7 +348,7 @@ class CreateBidsViewModel @Inject constructor(
             satisfactionComment = null,
             reasonDelay = null,
             solutionRemains = null,
-            servicePactId = _servicePactCreateID.value,
+            servicePactId = "58aeebc0-4e3a-11eb-8179-238e0269d9b6",//Сервисный договор по умолчанию
             serviceItemId = _serviceItemCreateID.value,
             supportLevelId = _levelCreateID.value,
             parentId = null,

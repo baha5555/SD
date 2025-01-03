@@ -21,8 +21,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
@@ -34,6 +37,7 @@ import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.TopAppBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,6 +47,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -50,6 +55,7 @@ import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
+import androidx.paging.map
 import com.example.sd.R
 import com.example.sd.domain.bits.Data
 import com.example.sd.presentation.authorization.AuthViewModel
@@ -58,24 +64,30 @@ import com.example.sd.presentation.filter.FilterViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.map
 
 
 @OptIn(ExperimentalLayoutApi::class)
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter", "FlowOperatorInvokedInComposition")
 @Composable
 fun BidsScreen(
     navController: NavController,
     viewModel: AuthViewModel,
     filterViewModel: FilterViewModel
 ) {
-    // Создаем переменные для данных
+
     val pagingData: Flow<PagingData<Data>> = if (filterViewModel.selectedFilters.isEmpty()) {
-        viewModel.paging(10) // Без фильтра
+        viewModel.paging(10)
     } else {
-        filterViewModel.fetchFilteredBids() // С фильтром
+        filterViewModel.fetchFilteredBids()
     }
 
     val lazyPagingItems = pagingData.collectAsLazyPagingItems()
+    LaunchedEffect(filterViewModel.selectedFilters) {
+        lazyPagingItems.refresh()
+    }
 
     Scaffold(
         topBar = {
@@ -85,7 +97,7 @@ fun BidsScreen(
                 backgroundColor = Color.White,
                 contentColor = Color.Black,
                 title = {
-                    Column {
+                    Column(modifier = Modifier.padding(top = 10.dp)) {
                         Text(
                             text = "Обращения",
                             fontSize = 32.sp,
@@ -100,8 +112,12 @@ fun BidsScreen(
                         ) {
 
                             OutlinedTextField(
-                                value = "",
-                                onValueChange = {},
+                                value = filterViewModel.selectedName,
+                                onValueChange = {
+                                                filterViewModel.selectedName = it
+                                                lazyPagingItems.refresh()
+
+                                },
                                 placeholder = {
                                     Text(
                                         text = "Поиск",
@@ -132,6 +148,15 @@ fun BidsScreen(
                                     errorBorderColor = Color(0xFFE2E8F0),
                                     cursorColor = Color(0xFF004FC7),
                                     textColor = Color.Black
+                                ),
+
+                                        keyboardOptions = KeyboardOptions.Default.copy(
+                                        imeAction = ImeAction.Search
+                                        ),
+                                keyboardActions = KeyboardActions(
+                                    onSearch = {
+                                        filterViewModel.showFilter()
+                                    }
                                 )
                             )
                             Box(

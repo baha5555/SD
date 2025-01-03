@@ -19,11 +19,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
 import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.material.Text
 import androidx.compose.material.contentColorFor
@@ -40,6 +42,8 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -47,12 +51,14 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.sd.R
+import com.example.sd.presentation.authorization.AuthViewModel
 import com.example.sd.presentation.components.CustomBackHandle
+import com.example.sd.utils.Values
 import kotlinx.coroutines.launch
 
 
 @Composable
-fun AnalysisScreen(navController: NavController, dashboardViewModel: DashboardViewModel) {
+fun AnalysisScreen(navController: NavController, dashboardViewModel: DashboardViewModel, viewModel: AuthViewModel) {
     val bidsDashboard = dashboardViewModel.stateDashboard.value.response?.data?.bids
 
     CustomBackHandle(true)
@@ -61,8 +67,49 @@ fun AnalysisScreen(navController: NavController, dashboardViewModel: DashboardVi
             .verticalScroll(rememberScrollState())
             .fillMaxSize()
             .background(Color.White)
-            .padding(horizontal = 19.dp, vertical = 8.dp)
+            .padding(horizontal = 19.dp, vertical = 19.dp)
     ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Icon(
+                painter = painterResource(id = R.drawable.icon_profile_55x55),
+                contentDescription = "Avatar",
+                modifier = Modifier
+                    .size(55.dp)
+                    .clip(CircleShape), tint = Color.Unspecified
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Column {
+                Text(
+                    text = "${viewModel.stateAboutMe.value.response?.init_fio}",
+                    style = TextStyle(
+                        fontSize = 18.sp,
+                        lineHeight = 32.sp,
+                        fontFamily = FontFamily(Font(R.font.inter)),
+                        fontWeight = FontWeight(700),
+                        color = Color(0xFF2C2D2E),
+
+                        )
+                )
+Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "Специалист ${Values.ROLES_RU.value}",
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        lineHeight = 24.sp,
+                        fontFamily = FontFamily(Font(R.font.inter)),
+                        fontWeight = FontWeight(400),
+                        color = Color(0xFFA0AEC0),
+
+                        )
+                )
+            }
+        }
+
+
         Spacer(modifier = Modifier.height(16.dp))
         Card(
             shape = RoundedCornerShape(16.dp),

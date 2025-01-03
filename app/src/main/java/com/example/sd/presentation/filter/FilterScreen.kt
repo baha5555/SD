@@ -4,12 +4,14 @@ import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.icu.util.Calendar
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -62,54 +64,53 @@ import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.sd.R
 import com.example.sd.presentation.accounts.AccountsViewModel
+import com.example.sd.presentation.components.DateRangePickerInput
+import com.example.sd.presentation.components.SearchableDropdownField
+import com.example.sd.presentation.components.SearchableDropdownFieldWithPaginationContact
 import com.example.sd.presentation.contact.ContactViewModel
+import com.example.sd.presentation.createBids.SearchableDropdownFieldWithPagination
+import com.example.sd.presentation.knowledgeBases.formatTo
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun FilterScreen(navController: NavController, viewModel: FilterViewModel) {
-    val scope = rememberCoroutineScope()
+fun FilterScreen(
+    navController: NavController,
+    viewModel: FilterViewModel,
+    accountsViewModel: AccountsViewModel,
+    searchViewModel: ContactViewModel
+) {
     val bottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
-    var selectedFilterLabel by remember { mutableStateOf("") }
-    var filterOptions by remember { mutableStateOf(listOf<String>()) }
-    var selectedValue by remember { mutableStateOf("") }
+    val expandedState = remember { mutableStateOf<String?>(null) }
 
-    val selectedFilters = viewModel.selectedFilters
+    var job: Job? = null
 
-    // Привязываем значения фильтров из ViewModel
-    var selectedDateTime by remember { mutableStateOf(viewModel.selectedDateTime) }
-    var selectedPlanDateTime by remember { mutableStateOf(viewModel.selectedPlanDateTime) }
-    var selectedState by remember { mutableStateOf(viewModel.selectedState) }
-    var selectedCategory by remember { mutableStateOf(viewModel.selectedCategory) }
-    var selectedLine by remember { mutableStateOf(viewModel.selectedLine) }
-    var selectedService by remember { mutableStateOf(viewModel.selectedService) }
-    var selectedContact by remember { mutableStateOf(viewModel.selectedContact) }
-    var selectedResponsible by remember { mutableStateOf(viewModel.selectedResponsible) }
 
-    // Обновляем фильтры при изменении в ViewModel
-    LaunchedEffect(selectedFilters) {
-        // Синхронизируем состояние с ViewModel
-        selectedDateTime = viewModel.selectedDateTime
-        selectedPlanDateTime = viewModel.selectedPlanDateTime
-        selectedState = viewModel.selectedState
-        selectedCategory = viewModel.selectedCategory
-        selectedLine = viewModel.selectedLine
-        selectedService = viewModel.selectedService
-        selectedContact = viewModel.selectedContact
-        selectedResponsible = viewModel.selectedResponsible
-    }
-    SideEffect {
+    var selectedDateTime by remember { mutableStateOf(Pair<Long?, Long?>(null, null)) }
+    var selectedPlanDateTime by remember { mutableStateOf(Pair<Long?, Long?>(null, null)) }
 
-    }
+
+
+
+
+
+
+
+
+
+
+
 
     ModalBottomSheetLayout(
         sheetState = bottomSheetState,
         sheetContent = {
             Row(
-                horizontalArrangement =  Arrangement.Center,
+                horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically, modifier = Modifier
                     .height(12.dp)
                     .fillMaxWidth()
@@ -120,47 +121,9 @@ fun FilterScreen(navController: NavController, viewModel: FilterViewModel) {
                         .width(50.dp)
                         .background(color = Color(0xFFE2E8F0), shape = RoundedCornerShape(16.dp))
                         .padding(top = 8.dp, bottom = 11.dp)
-                ){}
+                ) {}
             }
-            Column(modifier = Modifier
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState())) {
-                filterOptions.forEach { option ->
 
-                    Text(
-                        text = option,
-                         style = TextStyle(
-                            fontSize = 16.sp,
-                            lineHeight = 20.sp,
-                            fontFamily = FontFamily(Font(R.font.inter)),
-                            fontWeight = FontWeight(400),
-                            color = Color(0xFF2C2D2E),
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                selectedValue = option
-                                when (selectedFilterLabel) {
-                                    "Дата регистрации" -> viewModel.selectedDateTime = selectedValue
-                                    "План разрешения" -> viewModel.selectedPlanDateTime =
-                                        selectedValue
-
-                                    "Состояние" -> viewModel.selectedState = selectedValue
-                                    "Категория" -> viewModel.selectedCategory = selectedValue
-                                    "Линия" -> viewModel.selectedLine = selectedValue
-                                    "Сервис" -> viewModel.selectedService = selectedValue
-                                    "Контакт" -> viewModel.selectedContact = selectedValue
-                                    "Ответственный" -> viewModel.selectedResponsible = selectedValue
-                                }
-                                viewModel.addFilter(selectedValue) // Добавляем выбранный фильтр
-                                scope.launch { bottomSheetState.hide() }
-                            }
-                            .padding(vertical = 8.dp),
-                        fontSize = 16.sp,
-                        color = Color.Black
-                    )
-                }
-            }
         }
     ) {
         Scaffold(topBar = {
@@ -170,11 +133,14 @@ fun FilterScreen(navController: NavController, viewModel: FilterViewModel) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 1.dp)
-                    .padding(end = 10.dp)
+                    .padding(end = 10.dp,top = 10.dp)
                     .background(Color.White)
             ) {
                 IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(painter = painterResource(id = R.drawable.icon_left), contentDescription = "")
+                    Icon(
+                        painter = painterResource(id = R.drawable.icon_left),
+                        contentDescription = ""
+                    )
                 }
                 Text(
                     text = "Фильтр",
@@ -206,197 +172,198 @@ fun FilterScreen(navController: NavController, viewModel: FilterViewModel) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp)
-                    .verticalScroll(rememberScrollState()),
+                    .padding(16.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(1.dp))
 
-                Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-                    DateTimePickerField("Дата регистрации", viewModel.selectedDateTime) {
-                        viewModel.selectedDateTime = it
-                        viewModel.addFilter(it) // Добавляем выбранную дату в фильтры
+                Column(modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.9f)
+                    .padding(0.dp)
+                    .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(20.dp)) {
+                    Column {
+                        Text(
+                            text = "Дата регистрации",
+                            style = TextStyle(
+                                fontSize = 14.sp,
+                                lineHeight = 21.sp,
+                                fontFamily = FontFamily(Font(R.font.inter)),
+                                fontWeight = FontWeight(600),
+                                color = Color(0xFF5D6A83),
+                                letterSpacing = 0.2.sp,
+                            ),
+                            modifier = Modifier.padding(bottom = 0.dp)
+                        )
+                        DateRangePickerInput(
+                            selectedDateRange = selectedDateTime,
+                            onDateRangeSelected = { dateRange ->
+                                selectedDateTime = dateRange
+                            },
+                            onApiCall = { first, second ->
+                                val startDate = first.formatTo("yyyy-MM-dd")
+                                val endDate = second.formatTo("yyyy-MM-dd")
+                                viewModel.selectedDateTime = Pair(startDate, endDate)
+                            }
+                        )
                     }
-                    DateTimePickerField("План разрешения", viewModel.selectedPlanDateTime) {
-                        viewModel.selectedPlanDateTime = it
-                        viewModel.addFilter(it) // Добавляем выбранную дату в фильтры
+
+                    Spacer(modifier = Modifier.height(0.dp))
+                    Column {
+
+                        Text(
+                            text = "План разрешения",
+                            style = TextStyle(
+                                fontSize = 14.sp,
+                                lineHeight = 21.sp,
+                                fontFamily = FontFamily(Font(R.font.inter)),
+                                fontWeight = FontWeight(600),
+                                color = Color(0xFF5D6A83),
+                                letterSpacing = 0.2.sp,
+                            ),
+                            modifier = Modifier.padding(bottom = 1.dp)
+                        )
+
+                        DateRangePickerInput(
+                            selectedDateRange = selectedPlanDateTime,
+                            onDateRangeSelected = { dateRange ->
+                                selectedPlanDateTime = dateRange
+                            },
+                            onApiCall = { first, second ->
+                                val startDate = first.formatTo("yyyy-MM-dd")
+                                val endDate = second.formatTo("yyyy-MM-dd")
+                                viewModel.selectedPlanDateTime = Pair(startDate, endDate)
+                            }
+                        )
                     }
-                    FilterDropdown("Состояние", viewModel.selectedState, {
-                        viewModel.selectedState = it
-                        viewModel.addFilter(it)
-                    }, R.drawable.icon_down, bottomSheetState, scope, { label, options ->
-                        selectedFilterLabel = label
-                        filterOptions = options
-                    })
-                    FilterDropdown("Категория", viewModel.selectedCategory, {
-                        viewModel.selectedCategory = it
-                        viewModel.addFilter(it)
-                    }, R.drawable.icon_down, bottomSheetState, scope, { label, options ->
-                        selectedFilterLabel = label
-                        filterOptions = options
-                    })
-                    FilterDropdown("Линия", viewModel.selectedLine, {
-                        viewModel.selectedLine = it
-                        viewModel.addFilter(it)
-                    }, R.drawable.icon_down, bottomSheetState, scope, { label, options ->
-                        selectedFilterLabel = label
-                        filterOptions = options
-                    })
-                    FilterDropdown("Сервис", viewModel.selectedService, {
-                        viewModel.selectedService = it
-                        viewModel.addFilter(it)
-                    }, R.drawable.icon_down, bottomSheetState, scope, { label, options ->
-                        selectedFilterLabel = label
-                        filterOptions = options
-                    })
-                    FilterDropdown("Контакт", viewModel.selectedContact, {
-                        viewModel.selectedContact = it
-                        viewModel.addFilter(it)
-                    }, R.drawable.icon_down, bottomSheetState, scope, { label, options ->
-                        selectedFilterLabel = label
-                        filterOptions = options
-                    })
-                    FilterDropdown("Ответственный", viewModel.selectedResponsible, {
-                        viewModel.selectedResponsible = it
-                        viewModel.addFilter(it)
-                    }, R.drawable.icon_down, bottomSheetState, scope, { label, options ->
-                        selectedFilterLabel = label
-                        filterOptions = options
-                    })
-                }
 
-                Spacer(modifier = Modifier.height(25.dp))
 
-                val resultCount = selectedFilters.size // Количество фильтров для отображения
-
-                Button(
-                    onClick = {
-
-                        navController.navigate("BidsScreen")
-                    },
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF004FC7)),
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp)
-                ) {
-                    Text(
-                        text = "Показать (${resultCount} результата)",
-                        color = Color.White,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
+                    SearchableDropdownField(
+                        label = "Состояние",
+                        placeholder = "Выберите состояние",
+                        options = listOf(
+                            "Новое",
+                            "В работе",
+                            "Ожидает назначения ответственного",
+                            "Ожидает обработки",
+                            "Отклонено по SLA",
+                            "Отменено",
+                            "Разрешено",
+                            "Закрыто",
+                            "Ожидает реакцию пользователя"
+                        ),
+                        expandedState = expandedState,
+                        currentId = "selectedState",
+                        initialValue = viewModel.selectedState,
+                        onOptionSelected = { selectedName ->
+                            viewModel.selectedState = selectedName
+                        }
                     )
-                }
-            }
-        }
-    }
-    }
 
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-fun FilterDropdown(
-    label: String,
-    selectedValue: String,
-    onValueChange: (String) -> Unit,
-    iconEnd: Int,
-    bottomSheetState: ModalBottomSheetState,
-    scope: CoroutineScope,
-    openBottomSheet: (String, List<String>) -> Unit
-) {
-    val searchViewModel : ContactViewModel = hiltViewModel()
-    val accountsViewModel : AccountsViewModel = hiltViewModel()
-    val lazyPagingItemsForServiceItems = accountsViewModel.searchServiceItems().collectAsLazyPagingItems()
-    val serviceItems = remember { mutableStateOf(listOf<String>()) }
-    LaunchedEffect(lazyPagingItemsForServiceItems.itemCount) {
-        snapshotFlow { lazyPagingItemsForServiceItems.itemCount }
-            .collect { itemCount ->
-                val names = (0 until itemCount).mapNotNull { index ->
-                    lazyPagingItemsForServiceItems[index]?.name
-                }
-                serviceItems.value = names
-            }
-    }
-    val lazyPagingItems = searchViewModel.searchContact().collectAsLazyPagingItems()
-    val contact = remember { mutableStateOf(listOf<String>()) }
-    LaunchedEffect(lazyPagingItems.itemCount) {
-        snapshotFlow { lazyPagingItems.itemCount }
-            .collect { itemCount ->
-                val names = (0 until itemCount).mapNotNull { index ->
-                    lazyPagingItems[index]?.name
-                }
-                contact.value = names
-            }
-    }
-    fun getOptions(label: String): List<String> {
-        return when (label) {
-            "Линия" -> listOf("1 Линия", "2 Линия", "3 Линия")
-            "Категория" -> listOf("Запрос на изменение", "Запрос на обслуживание", "Инцидент", "Не указан")
-            "Состояние" -> listOf("Новое", "В работе", "Ожидает назначения ответственного", "Ожидает обработки", "Отклонено по SLA", "Отменено", "Разрешено", "Закрыто", "Ожидает реакцию пользователя")
-            "Сервис" -> serviceItems.value
-            "Контакт" -> contact.value
-            "Ответственный" ->contact.value
-            else -> listOf("Опция 1", "Опция 2", "Опция 3")
-        }
-    }
+                    SearchableDropdownField(
+                        label = "Категория",
+                        placeholder = "Выберите категорию",
+                        options = listOf(
+                            "Запрос на изменение",
+                            "Запрос на обслуживание",
+                            "Инцидент",
+                            "Не указан"
+                        ),
+                        expandedState = expandedState,
+                        currentId = "selectedCategory",
+                        initialValue = viewModel.selectedCategory,
+                        onOptionSelected = { selectedName ->
+                            viewModel.selectedCategory = selectedName
+                        }
+                    )
 
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Text(
-            label,
-            style = TextStyle(
-                fontSize = 14.sp,
-                lineHeight = 21.sp,
-                fontFamily = FontFamily(Font(R.font.inter)),
-                fontWeight = FontWeight(600),
-                color = Color(0xFF5D6A83),
-                letterSpacing = 0.2.sp,
-            )
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        OutlinedButton(
-            onClick = {
-                openBottomSheet(label, getOptions(label))
-                scope.launch { bottomSheetState.show() }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)
-                .padding(vertical = 4.dp),
-            shape = RoundedCornerShape(8.dp),
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Black)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+                    SearchableDropdownField(
+                        label = "Линия",
+                        placeholder = "Выберите категорию",
+                        options = listOf("1 Линия", "2 Линия", "3 Линия"),
+                        expandedState = expandedState,
+                        currentId = "selectedLine",
+                        initialValue = viewModel.selectedLine,
+                        onOptionSelected = { selectedName ->
+                            viewModel.selectedLine = selectedName
+                        }
+                    )
+
+                    val lazyPagingItems =
+                        accountsViewModel.searchServiceItems().collectAsLazyPagingItems()
+
+                    SearchableDropdownFieldWithPagination(
+                        label = "Сервис",
+                        placeholder = "Выберите сервис",
+                        lazyPagingItems = lazyPagingItems,
+                        expandedState = expandedState,
+                        currentId = "serviceItem",
+                        initialValue = viewModel.selectedService,
+                        onOptionSelected = { selectedStatus ->
+                            viewModel.selectedService = selectedStatus.name
+                            Log.i(
+                                "serviceItem",
+                                "serviceItem = = = =${selectedStatus.id + selectedStatus.name}"
+                            )
+                        }
+                    )
+
+
+
+                    SearchableDropdownFieldWithPaginationContact(
+                        label = "Контакт",
+                        placeholder = "Выберите контакт",
+                        viewModel = searchViewModel,
+                        expandedState = expandedState,
+                        currentId = "selectedContact",
+                        initialValue = viewModel.selectedContact,
+                        onOptionSelected = { selectedName ->
+                            viewModel.selectedContact = selectedName.name
+                        }
+                    )
+                    SearchableDropdownFieldWithPaginationContact(
+                        label = "Ответственный",
+                        placeholder = "Выберите контакт",
+                        viewModel = searchViewModel,
+                        expandedState = expandedState,
+                        currentId = "selectedResponsible",
+                        initialValue = viewModel.selectedResponsible,
+                        onOptionSelected = { selectedName ->
+                            viewModel.selectedResponsible = selectedName.name
+                        }
+                    )
+
+
+                }
+
+            Spacer(modifier = Modifier.height(0.dp))
+
+
+            Button(
+                onClick = {
+                    viewModel.showFilter()
+                    navController.navigate("BidsScreen")
+                },
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF004FC7)),
+                shape = RoundedCornerShape(8.dp),
+                elevation = ButtonDefaults.elevation(0.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
             ) {
-                if (label == "Контакт" || label == "Ответственный") {
-                    Icon(
-                        painter = painterResource(id = R.drawable.icon_profile_2),
-                        contentDescription = null,
-                        tint = Color(0xFFA0AEC0),
-                        modifier = Modifier
-                            .size(30.dp)
-                            .padding(end = 10.dp)
-                    )
-                }
                 Text(
-                    text = selectedValue,
+                    text = "Показать результат",
+                    color = Color.White,
                     fontSize = 16.sp,
-                    color = if (selectedValue.startsWith("Выберите")) Color.Gray else Color.Black,
-                    textAlign = TextAlign.Start,
-                    modifier = Modifier.weight(1f)
-                )
-                Icon(
-                    painter = painterResource(id = iconEnd),
-                    contentDescription = null,
-                    tint = Color(0xFFA0AEC0),
-                    modifier = Modifier
-                        .size(25.dp)
-                        .padding(start = 4.dp)
+                    fontWeight = FontWeight.Bold
                 )
             }
+        }
         }
     }
 }
+
 
 @Composable
 fun DateTimePickerField(
@@ -410,9 +377,11 @@ fun DateTimePickerField(
     val datePart = selectedValue.split(" ").getOrNull(0) ?: "ДД.ММ.ГГ"
     val timePart = selectedValue.split(" ").getOrNull(1) ?: "00:00"
 
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(vertical = 10.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 10.dp)
+    ) {
         Text(
             label, style = TextStyle(
                 fontSize = 14.sp,

@@ -1,6 +1,7 @@
 import android.annotation.SuppressLint
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,6 +18,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -27,12 +29,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.*
+import androidx.navigation.navArgument
 import com.example.sd.R
 import com.example.sd.presentation.dashboard.AnalysisScreen
 import com.example.sd.presentation.BidsScreen
 import com.example.sd.presentation.DetailScreen
 import com.example.sd.presentation.filter.FilterScreen
 import com.example.sd.presentation.ProfileScreen
+import com.example.sd.presentation.RoleScreen
+import com.example.sd.presentation.SoonScreen
 import com.example.sd.presentation.accounts.AccountsViewModel
 import com.example.sd.presentation.authorization.AuthViewModel
 import com.example.sd.presentation.authorization.ChangePasswordScreen
@@ -56,6 +61,7 @@ import com.example.sd.presentation.knowledgeBases.KnowledgeBasesScreen
 import com.example.sd.presentation.knowledgeBases.KnowledgeBasesViewModel
 import com.example.sd.presentation.report.ReportViewModel
 import com.example.sd.presentation.report.ReportsScreen
+import com.example.sd.utils.Values
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -96,9 +102,23 @@ fun MainScreen(
                 .padding(paddingValues)
         ) {
             NavHost(navController, startDestination = "AnalysisScreen") {
-                composable("AnalysisScreen") { AnalysisScreen(navController, dashboardViewModel) }
+                composable("AnalysisScreen") { AnalysisScreen(navController, dashboardViewModel,viewModel) }
                 composable("BidsScreen") { BidsScreen(navController, viewModel, filterViewModel) }
                 composable("DetailScreen") { DetailScreen(navController, viewModel) }
+                composable(
+                    "RoleScreen?title={title}",
+                    arguments = listOf(navArgument("title") { defaultValue = "роль" })
+                ) { backStackEntry ->
+                    val title = backStackEntry.arguments?.getString("title") ?: "роль"
+                    RoleScreen(navController, title)
+                }
+                composable(
+                    "SoonScreen?title={title}",
+                    arguments = listOf(navArgument("title") { defaultValue = "скоро" })
+                ) { backStackEntry ->
+                    val title = backStackEntry.arguments?.getString("title") ?: "скоро"
+                    SoonScreen(navController, title)
+                }
                 composable("DetailScreenContact") {
                     DetailScreenContact(
                         navController,
@@ -107,7 +127,7 @@ fun MainScreen(
                 }
                 composable("ReportsScreen") { /* Экран для отчетов */ }
                 composable("ProfileScreen") { ProfileScreen(navController, viewModel) }
-                composable("FilterScreen") { FilterScreen(navController, filterViewModel) }
+                composable("FilterScreen") { FilterScreen(navController, filterViewModel,accountsViewModel,contactViewModel) }
                 composable("ContactFilterScreen") {
                     ContactFilterScreen(
                         navController,
@@ -122,10 +142,15 @@ fun MainScreen(
                         knowledgeBasesViewModel
                     )
                 }
-                composable("KnowledgeBasesDetailScreen") {
+                composable(
+                    "KnowledgeBasesDetailScreen?id={id}",
+                    arguments = listOf(navArgument("id") { defaultValue = "" })
+                ) { backStackEntry ->
+                    val id = backStackEntry.arguments?.getString("id") ?: ""
                     KnowledgeBasesDetailScreen(
                         navController,
-                        knowledgeBasesViewModel
+                        knowledgeBasesViewModel,
+                        id
                     )
                 }
                 composable("KnowledgeBasesFilterScreen") {
@@ -137,7 +162,7 @@ fun MainScreen(
                 }
                 composable("ReportsScreen") {
                     ReportsScreen(
-                       reportViewModel
+                        reportViewModel
                     )
                 }
                 composable("ContactScreen") { ContactScreen(navController, contactViewModel) }
@@ -157,6 +182,7 @@ fun MainScreen(
                     CreateBidsScreen2(
                         navController,
                         viewModel = createBidsViewModel,
+                        accountsViewModel = accountsViewModel
                     )
                 }
                 composable("step3") {
@@ -194,10 +220,13 @@ fun MainScreen(
 
 
 @Composable
-fun BottomNavigationBar(navController: NavController, viewModel: CreateBidsViewModel) {
+fun BottomNavigationBar(
+    navController: NavController,
+    viewModel: CreateBidsViewModel,
+) {
     val selectedColor = Color(0xFF004FC7)
     val unselectedColor = Color.Gray
-
+    val context = LocalContext.current
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
 
@@ -290,13 +319,20 @@ fun BottomNavigationBar(navController: NavController, viewModel: CreateBidsViewM
                 },
                 selected = currentRoute == "step1",
                 onClick = {
-                    viewModel.getUUID()
-                    viewModel.getEntityNumber("App\\Models\\Bids\\Bid")
-                    navController.navigate("step1") {
-                        popUpTo(navController.graph.startDestinationId) { saveState = true }
-                        launchSingleTop = true
-                        restoreState = true
+                    if (Values.ROLES.value != "Super-User"){
+                        viewModel.getUUID()
+                        viewModel.getEntityNumber("App\\Models\\Bids\\Bid")
+                        navController.navigate("step1") {
+                            popUpTo(navController.graph.startDestinationId) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }else{
+                        navController.navigate("RoleScreen?title=Новое обращение")
+
                     }
+
+
 
                 }
             )
@@ -322,10 +358,25 @@ fun BottomNavigationBar(navController: NavController, viewModel: CreateBidsViewM
                 },
                 selected = currentRoute == "ReportsScreen",
                 onClick = {
-                    navController.navigate("ReportsScreen") {
-                        popUpTo(navController.graph.startDestinationId) { saveState = true }
-                        launchSingleTop = true
-                        restoreState = true
+                    Log.e("ROLES", Values.ROLES.value)
+                    if (Values.ROLES.value == "Super-User"
+                        || Values.ROLES.value == "line_one"
+                        || Values.ROLES.value == "line_two"
+                        || Values.ROLES.value == "line_three"
+                        || Values.ROLES.value == "manager_line_three"
+                        || Values.ROLES.value == "proccessing_users"
+                    ) {
+                        navController.navigate("ReportsScreen") {
+                            popUpTo(navController.graph.startDestinationId) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "У вас нет прав доступа к данной странице!",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             )

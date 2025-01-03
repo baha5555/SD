@@ -81,7 +81,7 @@ fun ReportsScreen(reportViewModel: ReportViewModel
         }
     ) { paddingValues ->
         var selectedTabIndex by remember { mutableStateOf(0) }
-        val tabs = listOf("Детальный", "По линиям", "KPI по линиям")
+        val tabs = listOf("Детальный", "По линиям", /*"KPI по линиям"*/)
 
         Column(
             modifier = Modifier
@@ -89,7 +89,7 @@ fun ReportsScreen(reportViewModel: ReportViewModel
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp)
         ) {
-            // Custom TabRow
+
             CustomTabRow(
                 tabs = tabs,
                 selectedTabIndex = selectedTabIndex,
@@ -101,8 +101,8 @@ fun ReportsScreen(reportViewModel: ReportViewModel
 
             when (selectedTabIndex) {
                 0 -> DetailedTabContent(reportViewModel)
-                1 -> ByLinesTabContent()
-                2 -> KPIByLinesTabContent()
+                1 -> ByLinesTabContent(reportViewModel)
+                //2 -> KPIByLinesTabContent()
             }
         }
     }
